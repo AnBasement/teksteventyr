@@ -6,6 +6,15 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.0] - 2025-08-16
+### Lagt til
+- Lagt til gang1, rom6 og rom7.
+
+### Endret
+- Har introdusert en kode spilleren må bruke for å få tak i brekkjern. Endret i den sammenheng hvordan skrivebordet i rom4 virker, og en beskrivelse tidligere i spillet.
+
+---
+
 ## [1.0.2] - 2025-08-13
 ### Endret
 - Tatt i bruk funksjoner for en rekke hendelser:

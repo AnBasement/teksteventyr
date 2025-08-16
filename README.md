@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.0.2  
+**Versjon:** 1.1.2 0
 **Lisens:** GNU GPLv3
 
 ---
@@ -29,15 +29,14 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
   - Utvalgte interagerbare objekter er også flyttet inn i funksjoner
 - Bruker nå dicts for sjekk av status på interagerbare objekter og gyldige valg
 
+- Per uke 4 er tre rom lagt til for totalt 7, med et ekstra puslespill spilleren må løse for å komme seg ut av kjelleren.
+
 ---
 
 ## Plan for videre utvikling
 
 ### Uke 4
 
-- Implementere dictionaries for å lagre romtilstander og mulige valg mer dynamisk
-- Lage funksjoner for å håndtere spill-logikk som overgang mellom rom og håndtering av gjenstander
-- Innføre feilhåndtering for brukerinput for å gjøre spillet mer robust
 - Utvide historien med nye valg, rom og grener for mer dybde og variasjon
 
 ---
