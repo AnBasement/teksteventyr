@@ -347,21 +347,29 @@ def rom4_trapp(status):
 
 # Funksjon for skrivebord i rom 4
 def rom4_skrivebord(status):
-    if not status["har_brekkjern"]:
-        kode_input = input("Det som uten tvil var et vakkert møbel en gang er nå slitt og råtnende. Alle skuffene mangler utenom én, men den er låst med en 3-sifret hengelås. Tast inn koden: ").strip()
+    if status.get("har_brekkjern"):
+        print("Et gammelt og godt brukt skrivebord med noen tomme skuffer.")
+        return status
+    while True:
+        kode_input = input(
+            "Det som uten tvil var et vakkert møbel en gang er nå slitt og råtnende. "
+            "Alle skuffene mangler utenom én, men den er låst med en 3-sifret hengelås. "
+            "Tast inn koden eller skriv 'avbryt': "
+        ).strip()
+        if kode_input.lower() == "avbryt":
+            print("Du avbryter forsøket på å åpne skuffen.")
+            break
         try:
             skrivebord_kode = int(kode_input)
         except ValueError:
             print("Du må taste inn tall.")
-            return status
-
+            continue
         if skrivebord_kode == 472:
             print("Med riktig kode får du av hengelåsen. Oppi skuffen ligger et brekkjern, som du plukker opp.")
             status["har_brekkjern"] = True
+            break
         else:
-            print("Feil kode.")
-    else:
-        print("Et gammelt og godt brukt skrivebord med noen tomme skuffer.")
+            print("Feil kode. Prøv igjen.")
     return status
 
 # Funksjon for gang1
