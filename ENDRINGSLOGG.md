@@ -6,6 +6,20 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.1] - 2025-08-16
+### Lag til
+- Funksjon "tallkode", som lar bruker skrive inn "tallkode" for å få en påminnelse på tallene de har funnet.
+
+### Endret
+- Lar spiller forsøke kodelåsen så mange ganger de vil, eller skrive "avbryt" for å gå tilbake til rommet.
+- Endrer romnavn for rom6 og 7 til rom5 og rom6 ettersom rom5 ble endret til gang1 før v1.1.0.
+- Oppdaterer hjelp-kommandoen til å inkludere den nye kommandoen.
+- Oppdaterer utforsk_tekst for rom5 og rom6 til å inkludere dør.
+- Rydder i hvordan programmet håndterer utforsk_tekst og inngang_tekst.
+- Rydder i hvordan programmet håndterer en restart slik at spiller alltid plasseres i rom1 og besøkt settes til False.
+
+---
+
 ## [1.1.0] - 2025-08-16
 ### Lagt til
 - Lagt til gang1, rom6 og rom7.
