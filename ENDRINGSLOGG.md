@@ -6,8 +6,18 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.0] - 2025-08-21
+### Lagt til
+- Legger til rom 7 og 8.
+
+### Endret
+- Endrer utforsk i rom 4 til å sjekke status avhengig av spillers handlinger i rom 8.
+- Endrer trapp i rom 4 til å sjekke status avhengig av spillers handlinger i rom 8.
+
+---
+
 ## [1.1.1] - 2025-08-16
-### Lag til
+### Lagt til
 - Funksjon "tallkode", som lar bruker skrive inn "tallkode" for å få en påminnelse på tallene de har funnet.
 
 ### Endret

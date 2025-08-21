@@ -2,7 +2,7 @@
 # eventyr.py
 #
 # Forfatter: AnBasement
-# Versjon: 1.1.0
+# Versjon: 1.2.0
 #
 # Beskrivelse:
 #   Et tekstbasert eventyrspill hvor spilleren navigerer gjennom flere rom
@@ -63,6 +63,12 @@ rom5_inngang_tekst = (
 rom6_inngang_tekst = (
     "Det kommer en relativt sterk, men frisk lukt fra døren, som blir forklart idet du åpner den."
 )
+rom7_inngang_tekst = (
+    "En søt lukt treffer deg i fleisen idet døren går opp, og du trer inn i et mykt opplyst rom."
+)
+rom8_inngang_tekst = (
+    "Når du åpner døren føles det som om du åpner døren til en badstue idet varm luft strømmer ut i den forholdsvis kjølige gangen."
+)
 
 # Variabler som printes ved bruk av "utforsk"-kommandoen
 rom1_utforsk_tekst = ("Du befinner deg i et mørkt rom med et lite, skittent vindu like under taket til vest med en stige under. Til øst er det en dør."
@@ -78,7 +84,7 @@ rom3_utforsk_tekst = (
 )
 rom4_utforsk_tekst = (
     "I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
-    "Under trappen står et gammelt skrivebord med en stol.\n"
+    "Under trappen står et gammelt skrivebord med en stol. På den ene veggen ser du en stor ventil.\n"
     "Der er en åpning på østveggen."
 )
 gang1_utforsk_tekst = (
@@ -93,6 +99,16 @@ rom6_utforsk_tekst = (
     "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskamaskiner stablet opp langs den ene veggen.\n" \
     "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul.\n" \
     "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
+)
+rom7_utforsk_tekst = (
+    "Rommet minner om en vinkjeller for en tenåringsgutt. Langs veggene ligger store plastikksekker fylt med forskjellige tomme bokser med energidrikker.\n" \
+    "Du ser noen vinskap fylt med Red Bull og monster av forskjellige typer, og noe som ser ut som en fermenteringsbeholder som det står 'Monstervin' på.\n" \
+    "På den ene veggen henger en stor oppslagstavle."
+)
+rom8_utforsk_tekst = (
+    "Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
+    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+    "På østveggen er det en stor ventil."
 )
 
 # Funksjon for beskrivelse av rom
@@ -111,7 +127,9 @@ besøkt = {
     "rom4": False,
     "gang1": False,
     "rom5": False,
-    "rom6": False
+    "rom6": False,
+    "rom7": False,
+    "rom8": False
 }
 
 # Dict for interagerbare objekter
@@ -122,7 +140,9 @@ status = {
     "rom3_skap": False,
     "tall1": False,
     "tall2": False,
-    "tall3": False
+    "tall3": False,
+    "åpen_ventil": False,
+    "falsk_nøkkel": False
 }
 
 # Funksjon som lister opp tallene spilleren har funnet
@@ -146,10 +166,12 @@ gyldige_valg_i_rom = {
     "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode"],
     "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode"],
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode"],
-    "rom4": ["øst", "trapp", "skrivebord", "utforsk", "hjelp", "tallkode"],
+    "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode"],
     "gang1": ["sør", "nordøst", "nordvest", "utforsk", "hjelp", "tallkode"],
     "rom5": ["sør", "esker", "hyller", "skap", "utforsk", "hjelp", "tallkode"],
-    "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode"]
+    "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode"],
+    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "utforsk", "hjelp", "tallkode"],
+    "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode"]
 }
 
 # Funksjon som nullstiller besøkte rom
@@ -306,8 +328,19 @@ def rom3_malingsspann(status):
 
 # Funksjon for rom4
 def rom4(rom, restart, status, besøkt):
-    besøkt = rombeskrivelse("rom4", rom4_inngang_tekst, rom4_utforsk_tekst, besøkt)
-    while True:  # Løkke for rom 4
+    if not besøkt["rom4"]:
+        print(rom4_inngang_tekst)
+        besøkt["rom4"] = True
+
+    if status["åpen_ventil"]:
+        print("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
+    "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
+    "Der er en åpning på østveggen."
+    )
+    else:
+        print(rom4_utforsk_tekst)
+        
+    while True:
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom4"], ugyldig)
 
@@ -321,6 +354,17 @@ def rom4(rom, restart, status, besøkt):
                 break
         elif valg == "skrivebord":
             rom4_skrivebord(status)
+        elif valg == "ventil":
+            if not status["åpen_ventil"]:
+                print("En stor ventil er plassert midt på vestveggen. Det kommer varm luft fra den andre siden.")
+            else:
+                print(ugyldig)
+        elif valg == "vest":
+            if status["åpen_ventil"]:
+                rom = "rom8"
+                break
+            else:
+                print(ugyldig)
         elif valg == "øst":
             rom = "rom3"
             break  # gå videre til rom3
@@ -340,6 +384,11 @@ def rom4_trapp(status):
                 quit()
             else:
                 print(ugyldig)
+    elif status["falsk_nøkkel"]:
+        restart, rom = tap_restart("Med litt makt klarer du å presse nøkkelen du fant inn i nøkkelhullet.\n"
+        "Du rister litt i nøkkelen i et forsøk på å vri den rundt, men nøkkelen knekker. Plutselig uler en alarm gjennom kjelleren.\n"
+        "Du hører en rytmisk dundring som blir høyere, og et gutturalt rop. Du rekker knapt å snu deg for å se inn i et fettete, kvisete ansikt før alt går i sort.")
+        return restart, rom
     else:
         print("Du klatrer opp den morkne trappa og vrir om håndtaket på døren.\n"
               "Samme hvor hardt du prøver, lar den ikke bevege på seg. Du merker et gammeldags nøkkelhull under håndtaket.")
@@ -459,6 +508,123 @@ def rom6_hjul(restart):
         else:
             print(ugyldig)
 
+# Funksjon for rom 7 - monsterkjelleren
+def rom7(rom, restart, status, besøkt):
+    besøkt = rombeskrivelse("rom7", rom7_inngang_tekst, rom7_utforsk_tekst, besøkt)
+    while True:
+
+        valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom7"], ugyldig)
+
+        if valg in ["hjelp", "utforsk", "tallkode"]:
+            hjelp_og_utforsk(valg, hjelp, rom7_utforsk_tekst, status)
+            continue
+
+        if valg == "nord":
+            rom = "gang1"
+            break
+        elif valg == "plastsekker":
+            print("Fem stappfulle plastsekker er stablet opp langs den ene veggen. Du roter litt oppi noen av dem, men gir opp når hendene dine blir klissete.")
+        elif valg == "vinskap":
+            print("Det er ikke første gang du ser et vinskap, men det er første gang du ser et vinskap fult av forskjellige energidrikker. Noen av dem har støv på seg og ser gamle ut.")
+        elif valg == "fermenteringsbeholder":
+            print("I det ene hjørnet bobler det i vei i det du bare kan anta er et forsøk på å lage vin av energidrikk. Du tar et lite sniff og rynker på nesen, frister ikke særlig.")
+        elif valg == "oppslagstavle":
+            print("Det henger et par forskjellige lapper på oppslagstavlen som ser ut til å indikere datoer på tidligere og det nåværende fermenteringsprosjektet.\n" \
+                  "På en gul lapp står det '!NB! Esker, skap, såpe!'")
+    return rom, restart, status, besøkt
+            
+# Funksjon for rom 8 - Fyrrommet
+def rom8(rom, restart, status, besøkt):
+    if not besøkt["rom8"]:
+        print(rom8_inngang_tekst)
+    besøkt["rom8"] = True
+
+    if status["åpen_ventil"]:
+        print("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
+    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+    "På østveggen er det en stor åpning."
+    )
+    else:
+        print(rom8_utforsk_tekst)
+        
+    while True:
+
+        valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom8"], ugyldig)
+
+        if valg in ["hjelp", "utforsk", "tallkode"]:
+            hjelp_og_utforsk(valg, hjelp, rom8_utforsk_tekst, status)
+            continue
+
+        if valg == "nord":
+            rom = "gang1"
+            break
+        elif valg == "øst":
+            if status["åpen_ventil"]:
+                rom = "rom4"
+                break
+            else:
+                print("ugyldig")
+        elif valg in ["ovn", "oljeovn"]:
+            restart, rom = rom8_oljeovn(restart, status)
+            if restart:
+                break
+        elif valg == "vifte":
+            print("Du ser deg rundt etter noe å klatre på for å nå opp til viften, men finner ingenting. Kanskje like greit, skarpe, roterende, rustne vifter høres ikke så kjekt ut.")
+        elif valg == "rør":
+            print("Forskjellige rør strekker seg fra oljeovnen og opp til taket, antagelig på vei til å spre varme gjennom huset. Noen vibrerer smått, andre er ødelagte, alle er rustne.")
+        elif valg == "oljekanner":
+            print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
+                  "Du snur den opp ned og rister på den. En gammeldags nøkkel faller ut, som du plukker opp og legger i lommen.")
+            status["falsk_nøkkel"] = True
+        elif valg == "ventil":
+            if not status["åpen_ventil"]:
+                restart, rom = rom8_ventil(restart, status)
+                if restart:
+                    break
+            else:
+                print(ugyldig)
+    return rom, restart, status, besøkt
+
+# Funksjon for oljeovnen i rom 8
+def rom8_oljeovn(restart, status):
+    while True:
+        if not status["har_brekkjern"]:
+            print("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
+                  "Dersom du hadde hatt et verktøy eller et brekkjern kunne du relativt enkelt ødelagt ovnen.")
+        else:
+            svar = input("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
+                         "Vil du prøve å ødelegge ovnen med brekkjernet ditt? (ja/nei)").strip().lower()
+            if svar == "ja":
+                restart, rom = tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
+                "Du bestemmer deg for en liten glipe skapt av rust langs toppen av oljeovnen. Du presser brekkjernet inn og legger vekten din på det til du kjenner at det gir etter.\n" \
+                "Du får ikke egentlig med deg hva som skjer. Rommet lyser plutselig opp, og et lite øyeblikk kjenner du en intens varme i ansiktet før det går i sort for deg.")
+                return restart, rom
+            elif svar == "nei":
+                return False, "rom8" 
+            else:
+                print(ugyldig)
+
+
+# Funksjon for ventil i rom 8
+def rom8_ventil(restart, status):
+    while True:
+        if not status["har_brekkjern"]:
+            print("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
+                  "Til tross for rusten klarer du ikke å rive den ut av veggen. Kanskje om du hadde noe kraftigere å bruke.")
+        else:
+            svar = input("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
+                         "Vil du forsøke å fjerne ventilen med brekkjernet? (ja/nei)")
+            if svar == "ja":
+                print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
+                      "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
+                status["åpen_ventil"] = True
+                return False, "rom8"
+            elif svar == "nei":
+                return False, "rom8"
+            else:
+                print(ugyldig)
+
+
 print("""Velkommen til det tekstbaserte eventyret 'Kjellerbeistet'!
 Du må forsøke å navigere deg til trappen og ut av kjelleren uten å støte på beistet.
 Om du trenger hjelp kan du skrive 'hjelp' for en liste over godkjente kommandoer.""")
@@ -498,3 +664,7 @@ while True:
         rom, restart, status, besøkt = rom5(rom, restart, status, besøkt)
     elif rom == "rom6":
         rom, restart, status, besøkt = rom6(rom, restart, status, besøkt)
+    elif rom == "rom7":
+        rom, restart, status, besøkt = rom7(rom, restart, status, besøkt)
+    elif rom == "rom8":
+        rom, restart, status, besøkt = rom8(rom, restart, status, besøkt)

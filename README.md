@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.1.2 0
+**Versjon:** 1.2.0. 
 **Lisens:** GNU GPLv3
 
 ---
@@ -31,13 +31,24 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 
 - Per uke 4 er tre rom lagt til for totalt 7, med et ekstra puslespill spilleren må løse for å komme seg ut av kjelleren.
 
+- I uke fem ble to nye rom lagt til for totalt 9, inkludert endringer til rom 4.
+
 ---
 
 ## Plan for videre utvikling
 
-### Uke 4
+### Uke 6
 
-- Utvide historien med nye valg, rom og grener for mer dybde og variasjon
+- Introdusere mulighet for å lagre spillet til en fil.
+
+### Uke 7
+- Dele spillet opp i filer, med rom i en fil, hjelpefunksjoner og løkker i en annen, og hovedløkken for spillet i en annen.
+
+### Uke 8
+- Refaktorer eksisterende filer.
+- Legg til fire rom.
+- Legg til muligheten for et "kart".
+- Implementer helse, inventar og poeng.
 
 ---
 
