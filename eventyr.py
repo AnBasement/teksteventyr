@@ -170,7 +170,7 @@ gyldige_valg_i_rom = {
     "gang1": ["sør", "nordøst", "nordvest", "utforsk", "hjelp", "tallkode"],
     "rom5": ["sør", "esker", "hyller", "skap", "utforsk", "hjelp", "tallkode"],
     "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode"],
-    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "utforsk", "hjelp", "tallkode"],
+    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode"],
     "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode"]
 }
 
@@ -563,7 +563,7 @@ def rom8(rom, restart, status, besøkt):
                 rom = "rom4"
                 break
             else:
-                print("ugyldig")
+                print(ugyldig)
         elif valg in ["ovn", "oljeovn"]:
             restart, rom = rom8_oljeovn(restart, status)
             if restart:

@@ -6,6 +6,13 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.1] - 2025-08-21
+### Fikset
+- Fikset en print-melding i rom 8 som skulle printet variabelen "ugyldig", men heller printet ordet "ugyldig."
+- Inkluderte "fermenteringsbeholder" i gyldige ord for rom 7.
+
+---
+
 ## [1.2.0] - 2025-08-21
 ### Lagt til
 - Legger til rom 7 og 8.
