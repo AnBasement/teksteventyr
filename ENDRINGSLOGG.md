@@ -6,6 +6,15 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.2] - 2025-08-27
+### Lagt til
+- Mulighet for å lagre og laste inn spillstatus.
+
+### Fikset
+- Fikset en TypeError om spiller valgte nei i rom2_ost.
+
+---
+
 ## [1.2.1] - 2025-08-21
 ### Fikset
 - Fikset en print-melding i rom 8 som skulle printet variabelen "ugyldig", men heller printet ordet "ugyldig."

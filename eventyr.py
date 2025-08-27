@@ -2,7 +2,7 @@
 # eventyr.py
 #
 # Forfatter: AnBasement
-# Versjon: 1.2.0
+# Versjon: 1.2.2
 #
 # Beskrivelse:
 #   Et tekstbasert eventyrspill hvor spilleren navigerer gjennom flere rom
@@ -24,13 +24,55 @@ ugyldig = "Ugyldig svar, prøv igjen. "
 omstart = "Vil du spille igjen? (ja/nei) "
 tap = "Kjellerbeistet tok deg, og omverdenen hører aldri fra deg igjen."
 spiller_prompt = "Hva vil du gjøre? "
-hjelp = "Spillet liker bare ett-ords kommandoer – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden!"
+hjelp = "Spillet liker bare ett-ords kommandoer – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
 
 # Variabel for rommet man befinner seg i. Begynner på "rom1" og endres avhengig av brukers valg.
 rom = "rom1"
 
 # Definerer variabelen "restart" som False
 restart = False
+
+# Lagre spillstatus
+def lagre_spill(besøkt, status, rom):
+    with open("savegame.txt", "w", encoding="utf-8") as fil:
+        fil.write("#besøkt\n")
+        for key, value in besøkt.items():
+            fil.write(f"{key}={value}\n")
+        fil.write("#status\n")
+        for key, value in status.items():
+            fil.write(f"{key}={value}\n")
+        fil.write("#rom\n")
+        fil.write(f"{rom}")
+    print("Spillet ditt er lagret!")
+
+# Laste inn spillstaturs
+def last_inn_spill():
+    global besøkt, status, rom  # Bruk hvis du vil oppdatere eksisterende variabler
+
+    with open("savegame.txt", "r", encoding="utf-8") as fil:
+        seksjon = None
+        for linje in fil:
+            linje = linje.strip()
+            if not linje or linje.startswith("#"):  # Skipper tomme linjer
+                if linje == "#besøkt":
+                    seksjon = "besøkt"
+                elif linje == "#status":
+                    seksjon = "status"
+                elif linje == "#rom":
+                    seksjon = "rom"
+                continue
+
+            if seksjon == "besøkt":
+                key, value = linje.split("=")
+                besøkt[key] = value == "True"
+            elif seksjon == "status":
+                key, value = linje.split("=")
+                status[key] = value == "True"
+            elif seksjon == "rom":
+                rom = linje
+
+    print("Velkommen tilbake!")
+    return besøkt, status, rom
 
 # Funksjon for å sjekke gyldige valg
 def sjekk_gyldig_valg(prompt, gyldige_valg, ugyldig):
@@ -163,22 +205,22 @@ def tallkode_funnet(status):
 
 # Dict for gyldige valg i hvert rom
 gyldige_valg_i_rom = {
-    "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode"],
-    "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode"],
-    "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode"],
-    "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode"],
-    "gang1": ["sør", "nordøst", "nordvest", "utforsk", "hjelp", "tallkode"],
-    "rom5": ["sør", "esker", "hyller", "skap", "utforsk", "hjelp", "tallkode"],
-    "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode"],
-    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode"],
-    "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode"]
+    "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
+    "gang1": ["sør", "nordøst", "nordvest", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom5": ["sør", "esker", "hyller", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"]
 }
 
 # Funksjon som nullstiller besøkte rom
 def nullstill_rom(romnavn, besøkt):
     besøkt[romnavn] = False
 
-# Funksjon for å håndtere hjelp og utforsk
+# Funksjon for å håndtere hjelp, utforsk, tallkode og lagre
 def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     if valg == "hjelp":
         print(hjelp_tekst)
@@ -186,6 +228,8 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
         print(utforsk_tekst)
     elif valg == "tallkode":
         tallkode_funnet(status)
+    elif valg == "lagre":
+        lagre_spill(besøkt, status, rom)
 
 # Funksjon for når spilleren taper spillet
 def tap_restart(tapmelding):
@@ -206,7 +250,7 @@ def rom1(rom, restart, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom1"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom1_utforsk_tekst, status)
             continue
 
@@ -227,7 +271,7 @@ def rom2(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom2"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom2_utforsk_tekst, status)
             continue
         
@@ -273,7 +317,7 @@ def rom2_ost(restart):
             restart, rom = tap_restart(tap)
             return restart, rom
         elif svar == "nei":
-            break  # tilbake til rom2 uten å gjøre noe
+            return False, "rom2"
         else:
             print(ugyldig)
 
@@ -284,7 +328,7 @@ def rom3(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom3"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom3_utforsk_tekst, status)
             continue
 
@@ -344,7 +388,7 @@ def rom4(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom4"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom4_utforsk_tekst, status)
             continue
 
@@ -428,7 +472,7 @@ def gang1(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["gang1"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, gang1_utforsk_tekst, status)
             continue
 
@@ -450,7 +494,7 @@ def rom5(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom5"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom5_utforsk_tekst, status)
             continue
 
@@ -476,7 +520,7 @@ def rom6(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom6"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom6_utforsk_tekst, status)
             continue
 
@@ -515,7 +559,7 @@ def rom7(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom7"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom7_utforsk_tekst, status)
             continue
 
@@ -551,7 +595,7 @@ def rom8(rom, restart, status, besøkt):
 
         valg = sjekk_gyldig_valg(spiller_prompt, gyldige_valg_i_rom["rom8"], ugyldig)
 
-        if valg in ["hjelp", "utforsk", "tallkode"]:
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
             hjelp_og_utforsk(valg, hjelp, rom8_utforsk_tekst, status)
             continue
 
@@ -631,8 +675,11 @@ Om du trenger hjelp kan du skrive 'hjelp' for en liste over godkjente kommandoer
 
 # Krever at spiller skriver "start" for å begynne
 while True:
-    start = input('Skriv "start" for å begynne. ').strip().lower()
+    start = input('Skriv "start" for å begynne, eller "last inn" for å laste inn et tidligere spill. ').strip().lower()
     if start == "start":
+        break
+    elif start == "last inn":
+        besøkt, status, rom = last_inn_spill()
         break
     print(ugyldig)
     

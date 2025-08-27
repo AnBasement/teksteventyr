@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.2.0. 
+**Versjon:** 1.2.2 
 **Lisens:** GNU GPLv3
 
 ---
@@ -9,7 +9,7 @@
 ## Om prosjektet
 
 *Kjellerbeistet* er et tekstbasert eventyrspill skrevet i Python.
-Spilleren navigerer gjennom flere rom i en mørk kjeller, unngår det fryktede Kjellerbeistet, og prøver å finne veien ut ved hjelp av observasjon, gjenstander og valg.
+Spilleren navigerer gjennom flere rom i en mørk kjeller, unngår det fryktede Kjellerbeistet, og prøver å finne veien ut ved hjelp av observasjon, interagerbare objekter og gjenstander, og valg.
 
 Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bli bedre i Python-programmering, samt å bli kjent med GitHub-arbeidsflyten med issues og pull requests.
 
@@ -33,13 +33,11 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 
 - I uke fem ble to nye rom lagt til for totalt 9, inkludert endringer til rom 4.
 
+- Muligheten for å lagre og fortsette spillet ble lagt til i uke 6.
+
 ---
 
 ## Plan for videre utvikling
-
-### Uke 6
-
-- Introdusere mulighet for å lagre spillet til en fil.
 
 ### Uke 7
 - Dele spillet opp i filer, med rom i en fil, hjelpefunksjoner og løkker i en annen, og hovedløkken for spillet i en annen.
@@ -49,6 +47,9 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 - Legg til fire rom.
 - Legg til muligheten for et "kart".
 - Implementer helse, inventar og poeng.
+
+### Videre
+Usikker på hvor veien går videre, en kjeller kan bare ha så mange rom, men det er jo ikke helt uhørt å ha to etasjer under bakken, eller?
 
 ---
 
