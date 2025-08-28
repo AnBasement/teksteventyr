@@ -6,6 +6,15 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.3] - 2025-08-28
+### Endret
+- Eventyr.py er splittet opp i tre filer for bedre oversikt.
+    - main.py inneholder hovedløkken for spillet.
+    - rooms.py inneholder funksjonene for de individuelle rommene.
+    - engine.py inneholder hjelpefunksjoner/utilities.
+
+---
+
 ## [1.2.2] - 2025-08-27
 ### Lagt til
 - Mulighet for å lagre og laste inn spillstatus.
