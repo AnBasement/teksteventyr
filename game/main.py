@@ -38,7 +38,7 @@ while True:
     
 # Begynner spillet
 while True:
-    if restart:
+    if engine.restart:
         rom = "rom1"
         for rom_navn in besøkt:
             besøkt[rom_navn] = False
@@ -47,24 +47,24 @@ while True:
         for key in status:
             status[key] = False
     
-    restart = False
+    engine.restart = False
 
     # Hovedløkke for å navigere gjennom rommene
-    if rom == "rom1":
-        rom, restart, besøkt = rooms.rom1(rom, restart, besøkt)
-    elif rom == "rom2":
-        rom, restart, status, besøkt = rooms.rom2(rom, restart, status, besøkt)
-    elif rom == "rom3":
-        rom, restart, status, besøkt = rooms.rom3(rom, restart, status, besøkt)
-    elif rom == "rom4":
-        rom, restart, status, besøkt = rooms.rom4(rom, restart, status, besøkt)
-    elif rom == "gang1":
-        rom, restart, status, besøkt = rooms.gang1(rom, restart, status, besøkt)
-    elif rom == "rom5":
-        rom, restart, status, besøkt = rooms.rom5(rom, restart, status, besøkt)
-    elif rom == "rom6":
-        rom, restart, status, besøkt = rooms.rom6(rom, restart, status, besøkt)
-    elif rom == "rom7":
-        rom, restart, status, besøkt = rooms.rom7(rom, restart, status, besøkt)
-    elif rom == "rom8":
-        rom, restart, status, besøkt = rooms.rom8(rom, restart, status, besøkt)
+    if engine.rom == "rom1":
+        rom, restart, besøkt = rooms.rom1(engine.rom, engine.restart, engine.besøkt)
+    elif engine.rom == "rom2":
+        rom, restart, status, besøkt = rooms.rom2(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom3":
+        rom, restart, status, besøkt = rooms.rom3(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom4":
+        rom, restart, status, besøkt = rooms.rom4(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "gang1":
+        rom, restart, status, besøkt = rooms.gang1(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom5":
+        rom, restart, status, besøkt = rooms.rom5(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom6":
+        rom, restart, status, besøkt = rooms.rom6(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom7":
+        rom, restart, status, besøkt = rooms.rom7(engine.rom, engine.restart, status, engine.besøkt)
+    elif engine.rom == "rom8":
+        rom, restart, status, besøkt = rooms.rom8(engine.rom, engine.restart, status, engine.besøkt)
