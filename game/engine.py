@@ -201,7 +201,7 @@ gyldige_valg_i_rom = {
     "rom5": ["sør", "esker", "kasser", "hyller", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"]
+    "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"]
 }
 
 # Funksjon som nullstiller besøkte rom
