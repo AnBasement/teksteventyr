@@ -1,5 +1,10 @@
 # Inneholder alt av hjelpefunksjoner.
 
+import os
+
+# Variabel som definerer filstien
+lagret_spill = os.path.join(os.path.dirname(__file__), "savegame.txt")
+
 # Definerer variabler som blir brukt flere ganger
 ugyldig = "Ugyldig svar, prøv igjen. "
 omstart = "Vil du spille igjen? (ja/nei) "
@@ -15,7 +20,7 @@ restart = False
 
 # Lagre spillstatus
 def lagre_spill(besøkt, status, rom):
-    with open("savegame.txt", "w", encoding="utf-8") as fil:
+    with open(lagret_spill, "w", encoding="utf-8") as fil:
         fil.write("#besøkt\n")
         for key, value in besøkt.items():
             fil.write(f"{key}={value}\n")
@@ -28,9 +33,11 @@ def lagre_spill(besøkt, status, rom):
 
 # Laste inn spillstaturs
 def last_inn_spill():
-    global besøkt, status, rom  # Bruk hvis du vil oppdatere eksisterende variabler
-
-    with open("savegame.txt", "r", encoding="utf-8") as fil:
+    global besøkt, status, rom 
+    if not os.path.exists(lagret_spill):
+        print("Finner ikke et lagret spill, starter et nytt!")
+        return besøkt, status, rom
+    with open(lagret_spill, "r", encoding="utf-8") as fil:
         seksjon = None
         for linje in fil:
             linje = linje.strip()
@@ -112,7 +119,7 @@ rom4_utforsk_tekst = (
 )
 gang1_utforsk_tekst = (
     "Du står i en lang gang. Foran deg ser du to dører, en til nordvest og en til nordøst.\n" \
-    "Gangen strekker seg fra vest til øst, men du ser ingen andre dører.\n" \
+    "Gangen strekker seg fra vest til øst, og når du ser deg rundt ser du også dører til sørvest og sørøst.\n" \
     "Gangen er opplyst av spottere, og fremstår ellers som helt bar."
 )
 rom5_utforsk_tekst = (
@@ -190,10 +197,10 @@ gyldige_valg_i_rom = {
     "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
-    "gang1": ["sør", "nordøst", "nordvest", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom5": ["sør", "esker", "hyller", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
+    "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom5": ["sør", "esker", "kasser", "hyller", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom7": ["nord", "vinskap", "plastsekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom8": ["nord", "øst", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"]
 }
 

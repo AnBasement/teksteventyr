@@ -40,6 +40,7 @@ def rom2(rom, restart, status, besøkt):
         elif valg == "skap":
             if not status["rom3_skap"]:
                 print("Du åpner skapdørene, og støkker idet et rustent strykebrett faller over deg.\nEtter at nervene roer seg kikker du rundt i skapet, men ser ingenting av interesse.")
+                status["rom3_skap"] = True
             else:
                 print("Vaskebrettet ligger på gulvet, resten av skapet er uinteressant.")
         elif valg == "arbeidsbenk":
@@ -244,6 +245,12 @@ def gang1(rom, restart, status, besøkt):
         elif valg == "nordøst":
             rom = "rom5"
             break  # gå videre til rom5
+        elif valg == "sørøst":
+            rom = "rom7"
+            break  # gå videre til rom5
+        elif valg == "sørvest":
+            rom = "rom8"
+            break  # gå videre til rom5
     return rom, restart, status, besøkt
 
 # Funksjon for rom5
@@ -260,10 +267,10 @@ def rom5(rom, restart, status, besøkt):
         if valg == "sør":
             rom = "gang1"
             break  # gå videre til gang
-        elif valg == "esker":
+        elif valg in ["esker", "kasser"]:
             print("Du ser over stablene av esker som står spredd langs veggene, i varierende grad av forråtnelse.\n" \
             "Du åpner noen vilkårlige esker, og finner noen fylt med gamle tegneserier, andre med gamle spill, og underlig nok en tredje full av flasker fylt med en gul væske.")
-        elif valg == "hyller":
+        elif valg in ["reoler", "hyller"]:
             print("Du går frem og tilbake i rommet og saumfarer hyllene etter noe nyttig.\n" \
             "På noen av hyllene står det noen gamle lekefigurer, men du finner ingenting av nytte.")
         elif valg == "skap":
@@ -376,9 +383,12 @@ def rom8(rom, restart, status, besøkt):
         elif valg == "rør":
             print("Forskjellige rør strekker seg fra oljeovnen og opp til taket, antagelig på vei til å spre varme gjennom huset. Noen vibrerer smått, andre er ødelagte, alle er rustne.")
         elif valg == "oljekanner":
-            print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
+            if not status["falsk_nøkkel"]:
+                print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
                   "Du snur den opp ned og rister på den. En gammeldags nøkkel faller ut, som du plukker opp og legger i lommen.")
-            status["falsk_nøkkel"] = True
+                status["falsk_nøkkel"] = True
+            else:
+                print("Et par bulkete og sølete oljekanner.")
         elif valg == "ventil":
             if not status["åpen_ventil"]:
                 restart, rom = rom8_ventil(restart, status)
@@ -394,6 +404,7 @@ def rom8_oljeovn(restart, status):
         if not status["har_brekkjern"]:
             print("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
                   "Dersom du hadde hatt et verktøy eller et brekkjern kunne du relativt enkelt ødelagt ovnen.")
+            return False, "rom8"
         else:
             svar = input("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
                          "Vil du prøve å ødelegge ovnen med brekkjernet ditt? (ja/nei)").strip().lower()
@@ -414,6 +425,7 @@ def rom8_ventil(restart, status):
         if not status["har_brekkjern"]:
             print("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
                   "Til tross for rusten klarer du ikke å rive den ut av veggen. Kanskje om du hadde noe kraftigere å bruke.")
+            return False, "rom8"
         else:
             svar = input("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
                          "Vil du forsøke å fjerne ventilen med brekkjernet? (ja/nei)")
