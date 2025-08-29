@@ -6,6 +6,25 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.3] - 2025-08-29
+### Endret
+- Eventyr.py er splittet opp i tre filer for bedre oversikt.
+    - main.py inneholder hovedløkken for spillet.
+    - rooms.py inneholder funksjonene for de individuelle rommene.
+    - engine.py inneholder hjelpefunksjoner/utilities.
+- Bruker nå os-modulen for å sikre lagring av spill til samme mappe som main.py
+
+### Fikset
+- Fikset interaksjon med skap i rom 2.
+- Fikset gyldige ord i rom 5 for esker og reoler.
+- Gjort det mulig å faktisk komme seg inn i rom 7 og 8 fra gang 1.
+- Lagt til flere gyldige ord i rom 7 og 8.
+- Fikset ventil og oljeovn i rom 8 for å unngå en evig print-løkke.
+- Fikset oppdatering av status for oljekanner i rom 8.
+- Dersom spiller forsøker å laste inn et lagret spill uten at det finnes en savegame.txt vil spillet heller nå startes automatisk.
+
+---
+
 ## [1.2.2] - 2025-08-27
 ### Lagt til
 - Mulighet for å lagre og laste inn spillstatus.
