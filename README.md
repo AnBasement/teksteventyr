@@ -56,11 +56,11 @@ Usikker på hvor veien går videre, en kjeller kan bare ha så mange rom, men de
 ## Hvordan kjøre spillet
 
 1. Sørg for at Python 3 er installert på din maskin
-2. Last ned filen `eventyr.py`
+2. Last ned filene i mappen 'game':  `main.py`, `rooms.py` og `engine.py`
 3. Kjør programmet fra terminalen med kommandoen:
 
 ```bash
-python eventyr.py
+python main.py
 ```
 4. Følg instruksjonene i spillet
 
