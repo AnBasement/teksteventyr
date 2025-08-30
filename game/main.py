@@ -2,7 +2,7 @@
 # eventyr.py
 #
 # Forfatter: AnBasement
-# Versjon: 1.2.3
+# Versjon: 1.3.0
 #
 # Beskrivelse:
 #   Et tekstbasert eventyrspill hvor spilleren navigerer gjennom flere rom

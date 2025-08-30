@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.2.3  
+**Versjon:** 1.3.0  
 **Lisens:** GNU GPLv3
 
 ---
@@ -35,7 +35,7 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 
 - Muligheten for å lagre og fortsette spillet ble lagt til i uke 6.
 
-- Filen ble delt opp i tre i uke 7 for bedre oversikt. Også en rekke bugfikser og bruk av os-modul for enklere kontroll over filstier. Tre nye rom ble introdusert som setter opp for videre utvidelse
+- Filen ble delt opp i tre i uke 7 for bedre oversikt. Også en rekke bugfikser og bruk av os-modul for enklere kontroll over filstier. Tre nye rom ble introdusert som setter opp for videre utvidelse.
 
 ---
 
