@@ -68,3 +68,9 @@ while True:
         engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom7(engine.rom, engine.restart, engine.status, engine.besøkt)
     elif engine.rom == "rom8":
         engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom8(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "rom9":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom9(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "rom10":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom10(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "rom11":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom10(engine.rom, engine.restart, engine.status, engine.besøkt)

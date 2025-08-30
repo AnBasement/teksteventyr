@@ -99,6 +99,15 @@ rom7_inngang_tekst = (
 rom8_inngang_tekst = (
     "Når du åpner døren føles det som om du åpner døren til en badstue idet varm luft strømmer ut i den forholdsvis kjølige gangen."
 )
+rom9_inngang_tekst = (
+    "Du dytter på det løse panelet, som sklir opp og avslører et skjult rom på den andre siden."
+)
+rom10_inngang_tekst = (
+    "Det øyeblikket du dytter opp døren kommer en støvsky ut og treffer deg i ansiktet. Etter et hosteanfall ser du deg rundt i det nye rommet."
+)
+rom11_inngang_tekst = (
+    "Du åpner døren og blir møtt av et bekmørkt rom. Lyset fra fyrrommet lyser ikke opp mer enn en meter inn."
+)
 
 # Variabler som printes ved bruk av "utforsk"-kommandoen
 rom1_utforsk_tekst = ("Du befinner deg i et mørkt rom med et lite, skittent vindu like under taket til vest med en stige under. Til øst er det en dør."
@@ -123,11 +132,11 @@ gang1_utforsk_tekst = (
     "Gangen er opplyst av spottere, og fremstår ellers som helt bar."
 )
 rom5_utforsk_tekst = (
-    "Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. En dør leder sør."
+    "Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. En sliten hylle står lent mot østveggen. En dør leder sør."
 )
 rom6_utforsk_tekst = (
     "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskamaskiner stablet opp langs den ene veggen.\n" \
-    "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul.\n" \
+    "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n" \
     "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
 )
 rom7_utforsk_tekst = (
@@ -139,6 +148,20 @@ rom8_utforsk_tekst = (
     "Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
     "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
     "På østveggen er det en stor ventil."
+)
+rom9_utforsk_tekst = (
+    "Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
+    "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne står en gammel bøtte med noe mørkt og flytende oppi.\n" \
+    "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
+)
+rom10_utforsk_tekst = (
+    "Rommet kan bare beskrives som et slags gammelt arkivrom. Stabler av gamle aviser, magasiner og blader og hyller med bøker over hele rommet.\n" \
+    "Midt i rommet står en pult med en gammel pizzaeske, en haug med avisutklipp og en slags manual på.\n" \
+    "Du får inntrykk av at rommet ikke har hatt besøkende på lang tid."
+)
+rom11_utforsk_tekst = (
+    "Det mørke rommet er relativt tomt. Et tykt lag støv ligger på gulvet, avbrutt kun av fotspor som leder fem og tilbake mellom døren og en luke i gulvet.\n" \
+    "Luken, som ser relativt solid ut, har et messingskilt på seg."
 )
 
 # Funksjon for beskrivelse av rom
@@ -159,7 +182,8 @@ besøkt = {
     "rom5": False,
     "rom6": False,
     "rom7": False,
-    "rom8": False
+    "rom8": False,
+    "rom9": False
 }
 
 # Dict for interagerbare objekter
@@ -172,7 +196,11 @@ status = {
     "tall2": False,
     "tall3": False,
     "åpen_ventil": False,
-    "falsk_nøkkel": False
+    "falsk_nøkkel": False,
+    "glødende_sopp": False,
+    "bøtte": False,
+    "åpen_hylle": False,
+    "kart": False
 }
 
 # Funksjon som lister opp tallene spilleren har funnet
@@ -198,10 +226,13 @@ gyldige_valg_i_rom = {
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
     "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom5": ["sør", "esker", "kasser", "hyller", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom6": ["sør", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom5": ["sør", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"]
+    "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom9": ["sør", "sopp", "glødende sopp", "bøtte", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom10": ["vest", "aviser", "magasiner", "pult", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "utforsk", "hjelp", "tallkode", "lagre"]
 }
 
 # Funksjon som nullstiller besøkte rom

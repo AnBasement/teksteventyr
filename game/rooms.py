@@ -26,7 +26,7 @@ def rom1(rom, restart, besøkt):
 # Funksjon for rom2
 def rom2(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom2", engine.rom2_inngang_tekst, engine.rom2_utforsk_tekst, besøkt)
-    while True:  # separat løkke for rom2
+    while True:  
 
         valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom2"], engine.ugyldig)
 
@@ -36,7 +36,7 @@ def rom2(rom, restart, status, besøkt):
         
         if valg == "nord":
             rom = "rom3"
-            break  # gå videre til rom3
+            break 
         elif valg == "skap":
             if not status["rom3_skap"]:
                 print("Du åpner skapdørene, og støkker idet et rustent strykebrett faller over deg.\nEtter at nervene roer seg kikker du rundt i skapet, men ser ingenting av interesse.")
@@ -48,7 +48,7 @@ def rom2(rom, restart, status, besøkt):
         elif valg == "øst":
             restart, rom = rom2_ost(restart)
             if restart:
-                break  # bryt rom2-løkka for å håndtere restart eller quit
+                break 
         else:
             print(engine.ugyldig)
     return rom, restart, status, besøkt
@@ -84,7 +84,7 @@ def rom2_ost(restart):
 # Funksjon for rom 3
 def rom3(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom3", engine.rom3_inngang_tekst, engine.rom3_utforsk_tekst, besøkt)
-    while True: # Løkke for rom 3
+    while True:
 
         valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom3"], engine.ugyldig)
 
@@ -111,24 +111,24 @@ def rom3(rom, restart, status, besøkt):
 # Funksjon for malingsspann i rom 3
 def rom3_malingsspann(status):
     while True:
-        if not status["har_nøkkel"]:  # Sjekker om spilleren har nøkkelen
-            if not status["har_brekkjern"]:  # Sjekker om spilleren har brekkjernet
+        if not status["har_nøkkel"]: 
+            if not status["har_brekkjern"]:  
                 print(
                     "Du plukker opp noen av malingsspannene, og hører noe løst inni en av dem.\n"
                     "Du forsøker å åpne den, men inntørket maling og rust har gjort det nesten umulig."
                 )
-            else: # Spilleren har brekkjernet
+            else: 
                 print(
                     "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
                     "Inni finner du en gammeldags nøkkel!"
                 )
-                status["har_nøkkel"] = True # Spilleren får nøkkelen
+                status["har_nøkkel"] = True 
                 break
         else:
-            print("En haug med gamle malingsspann.") # Spilleren har allerede nøkkelen
+            print("En haug med gamle malingsspann.") 
         break
     
-    return status # Returnerer oppdatert status
+    return status
 
 # Funksjon for rom4
 def rom4(rom, restart, status, besøkt):
@@ -154,7 +154,7 @@ def rom4(rom, restart, status, besøkt):
 
         if valg == "trapp":
             restart, rom = rom4_trapp(status)
-            if restart:  # Spill fullført, bryt løkka
+            if restart: 
                 break
         elif valg == "skrivebord":
             rom4_skrivebord(status)
@@ -171,19 +171,19 @@ def rom4(rom, restart, status, besøkt):
                 print(engine.ugyldig)
         elif valg == "øst":
             rom = "rom3"
-            break  # gå videre til rom3
+            break 
     return rom, restart, status, besøkt
 
 # Funksjon for trapp i rom 4
 def rom4_trapp(status):
-    if status["har_nøkkel"]:  # Sjekker om spilleren har nøkkelen
+    if status["har_nøkkel"]: 
         print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
               "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
               "Gratulerer! Du har unngått Kjellerbeistet og rømt fra kjelleren!")
         while True:
             valg_restart = input(engine.omstart).strip().lower()
             if valg_restart == "ja":
-                return True, "rom1"  # restart = True, rom = rom1
+                return True, "rom1" 
             elif valg_restart == "nei":
                 quit()
             else:
@@ -228,7 +228,7 @@ def rom4_skrivebord(status):
 # Funksjon for gang1
 def gang1(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("gang1", engine.gang1_inngang_tekst, engine.gang1_utforsk_tekst, besøkt)
-    while True:  # Løkke for gang 1
+    while True:
 
         valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["gang1"], engine.ugyldig)
 
@@ -238,19 +238,19 @@ def gang1(rom, restart, status, besøkt):
 
         if valg == "sør":
             rom = "rom3"
-            break  # gå videre til rom3
+            break 
         elif valg == "nordvest":
             rom = "rom6"
-            break  # gå videre til rom6
+            break 
         elif valg == "nordøst":
             rom = "rom5"
-            break  # gå videre til rom5
+            break 
         elif valg == "sørøst":
             rom = "rom7"
-            break  # gå videre til rom5
+            break 
         elif valg == "sørvest":
             rom = "rom8"
-            break  # gå videre til rom5
+            break 
     return rom, restart, status, besøkt
 
 # Funksjon for rom5
@@ -270,19 +270,42 @@ def rom5(rom, restart, status, besøkt):
         elif valg in ["esker", "kasser"]:
             print("Du ser over stablene av esker som står spredd langs veggene, i varierende grad av forråtnelse.\n" \
             "Du åpner noen vilkårlige esker, og finner noen fylt med gamle tegneserier, andre med gamle spill, og underlig nok en tredje full av flasker fylt med en gul væske.")
-        elif valg in ["reoler", "hyller"]:
+        elif valg == "reoler":
             print("Du går frem og tilbake i rommet og saumfarer hyllene etter noe nyttig.\n" \
             "På noen av hyllene står det noen gamle lekefigurer, men du finner ingenting av nytte.")
         elif valg == "skap":
             print("Bakerst i rommet står det et skap som minner deg om skoledagene dine. Sett bort fra tallet '7' på forsiden er det ingenting uvanlig med det.\n" \
             "Du tar tak i håndtaket og røsker til, men skapet beveger seg ikke.")
             status["tall2"] = True
+        elif valg in ["hylle", "hyller"]:
+            restart, rom = rom5_hylle(status)
+        elif valg == "øst":
+            if status["åpen_hylle"]:
+                rom = "rom10"
+                break
+            else:
+                print(engine.ugyldig)
     return rom, restart, status, besøkt
+
+# Funksjon for hylle i rom5
+def rom5_hylle(status):
+    while True:
+        svar = input("Du undersøker hyllen på østveggen litt nærmere, og merker en underlig lukt fra dem. Ved nærmere undersøkelse ser du en dør bak hyllen. Vil du forsøke å flytte på den? ").strip().lower()
+        if svar == "ja":
+            print("Du dytter så hardt du kan i siden av hyllen, som etterhvert begynner å skli til siden. Bak finner du en åpenbart hjemmesnekret dør.")
+            status["åpen_hylle"] = True
+            engine.rom5_utforsk_tekst = ("Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. Dører leder sør og øst."
+            )
+            return status
+        elif svar == "nei":
+            return False, "rom6" 
+        else:
+            print(engine.ugyldig)
 
 # Funksjon for rom6
 def rom6(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom6", engine.rom6_inngang_tekst, engine.rom6_utforsk_tekst, besøkt)
-    while True: # Løkke for rom6
+    while True: 
 
         valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom6"], engine.ugyldig)
 
@@ -292,7 +315,10 @@ def rom6(rom, restart, status, besøkt):
 
         if valg == "sør":
             rom = "gang1"
-            break # Gå tidere til gang
+            break
+        elif valg == "nord":
+            rom = "rom9"
+            break
         elif valg in ["vaskemaskiner", "vaskemaskin"]:
             print("Vaskemaskinene er i dårlig stand, og tydeligvis ikke brukt på en stund. Det ligger en haug med råtne klær i den ene, og ingen av dem reagerer når du trykker på knappene.")
         elif valg == "hyller":
@@ -345,19 +371,8 @@ def rom7(rom, restart, status, besøkt):
             
 # Funksjon for rom 8 - Fyrrommet
 def rom8(rom, restart, status, besøkt):
-    if not besøkt["rom8"]:
-        print(engine.rom8_inngang_tekst)
-    besøkt["rom8"] = True
-
-    if status["åpen_ventil"]:
-        print("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
-    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
-    "På østveggen er det en stor åpning."
-    )
-    else:
-        print(engine.rom8_utforsk_tekst)
-        
-    while True:
+    besøkt = engine.rombeskrivelse("rom8", engine.rom8_inngang_tekst, engine.rom8_utforsk_tekst, besøkt)
+    while True: 
 
         valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom8"], engine.ugyldig)
 
@@ -396,6 +411,11 @@ def rom8(rom, restart, status, besøkt):
                     break
             else:
                 print(engine.ugyldig)
+        elif valg == "sør":
+            if not status["glødende_sopp"]:
+                print("Du åpner døren som leder sør, men rommet er så mørkt at du ikke tør ta steget inn.")
+            else:
+                rom = "rom11"
     return rom, restart, status, besøkt
 
 # Funksjon for oljeovnen i rom 8
@@ -433,8 +453,103 @@ def rom8_ventil(restart, status):
                 print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
                       "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
                 status["åpen_ventil"] = True
+                engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
+                "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+                "På østveggen er det en stor åpning."
+                )
                 return False, "rom8"
             elif svar == "nei":
                 return False, "rom8"
             else:
                 print(engine.ugyldig)
+
+# Funksjon for rom 9
+def rom9(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("rom9", engine.rom9_inngang_tekst, engine.rom9_utforsk_tekst, besøkt)
+    while True:
+
+        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom9"], engine.ugyldig)
+
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom9_utforsk_tekst, status)
+            continue
+
+        if valg == "sør":
+            rom = "rom6"
+            break
+        elif valg in ["sopp", "glødende sopp"]:
+            print("Du tar tak i en av soppene og napper til. Gratulerer, du har en glødende sopp! Kanskje best å ikke smake på...")
+            status["glødende_sopp"] = True
+        elif valg == "bøtte":
+            if not status["bøtte"]:
+                print("Du nærmer deg bøtten og kjenner en underlig dunts som gjør det litt vanskelig å puste. Idet du forsøker å plukke den opp faller bunnen ut,\n" \
+                "og innholdet flyter utover gulvet.")
+                status["bøtte"] = True
+            else:
+                print("Gulvet er dekket av en mørk, klissete substans og bøtten ligger henslengt på siden.")
+    
+    return rom, restart, status, besøkt
+
+# Funksjon for rom 10
+def rom10(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("rom10", engine.rom10_inngang_tekst, engine.rom10_utforsk_tekst, besøkt)
+    while True:
+
+        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom10"], engine.ugyldig)
+
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom10_utforsk_tekst, status)
+            continue
+
+        if valg == "vest":
+            rom = "rom5"
+            break
+        elif valg in ["aviser", "magasiner"]:
+            print("Du ser kjapt gjennom stablene med aviser og magasiner, men uten å finne noe særlig av interesse. Med mindre du er interesert i Tysvær Bygdablad eller gamle utgaver av Autofil.")
+        elif valg in ["bøker", "hyller"]:
+            print("Bokhyllene og bøkene i dem er dekket av et tykt lag støv. Du blåser på noen av dem, og ser at det stort sett er 'Animorphs'-bøker.")
+        elif valg == "pult":
+            rom = rom10_pult(status)
+            break
+
+    return rom, restart, status, besøkt
+
+# Funksjon for pult i rom 10
+def rom10_pult(status):
+    while True:         
+        svar = input("På pulten ligger det en gammel pizzaeske, en manual og en haug med avisutklipp. Hva vil du gjøre? ")
+
+        if svar == "pizzaeske":
+            if not status["kart"]:
+                print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
+                status["kart"] = True
+            else:
+                print("En pizzaeske med et hull hvor det tidligere var et kart.")
+        elif svar == "manual":
+            print("På den slitte gamle manualen står det i store bokstaver, 'OLJEOVN m.1977'. Du prøver å plukke den opp, men ombestemmer deg sidene begynner å falle ut.")
+        elif svar == "avisutklipp":
+            print("Du romsterer forsiktig gjennom haugen av avisutklipp. De fleste er gamle spillanmeldelser hvor terningkastet er skrablet over, men noen handler om rapporter om uvanlige lyder fra et nedslitt hus.")
+        return status
+    
+# Funksjon for rom 11
+def rom11(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("rom11", engine.rom11_inngang_tekst, engine.rom11_utforsk_tekst, besøkt)
+    while True:
+
+        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom11"], engine.ugyldig)
+
+        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom11_utforsk_tekst, status)
+            continue
+
+        if valg == "nord":
+            rom = "rom8"
+            break
+        elif valg == "fotspor":
+            print("Fotsporene leder frem og tilbake mellom luken og døren, og ser relativt ferske ut sammenlignet med resten av rommet.")
+        elif valg == "luke":
+            print("Luken er låst med ikke bare én, men tre hengelåser. To trenger en nøkkel, og den tredje trenger en 4-sifret kode. Du forsøker å dra i den, uten hell.")
+        elif valg in ["skilt", "messingskilt"]:
+            print("Du tørker litt støv og rusk av messingskiltet og leser det. 'ADGANG KUN FOR ALFAMENN!!'")
+
+    return rom, restart, status, besøkt

@@ -6,6 +6,18 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.0] - 2025-08-30
+### Lagt til
+- Tre nye rom er introdusert.
+    - Soppkrypten, et lite rom som nås via en dør i rom 6.
+    - Arkivrommet, et arkivrom som nås fra en skjult dør bak hyller i rom 5.
+    - Lukerommet, nås via en dør på sørveggen i rom 8.
+
+### Fikset
+- Bruk av kommandoen utforsk i rom 8 oppdateres nå korrekt etter at ventilen blir åpnet.
+
+---
+
 ## [1.2.3] - 2025-08-29
 ### Endret
 - Eventyr.py er splittet opp i tre filer for bedre oversikt.
