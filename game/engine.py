@@ -10,7 +10,8 @@ ugyldig = "Ugyldig svar, prøv igjen. "
 omstart = "Vil du spille igjen? (ja/nei) "
 tap = "Kjellerbeistet tok deg, og omverdenen hører aldri fra deg igjen."
 spiller_prompt = "Hva vil du gjøre? "
-hjelp = "Spillet liker bare ett-ords kommandoer – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
+hjelp = "Spillet godkjenner bare kommandoer med to ord, som må starte med 'gå', 'se', 'ta', eller 'bruk' – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
+ingen_vei = "Det er ingen vei i den retningen."
 
 # Variabel for rommet man befinner seg i. Begynner på "rom1" og endres avhengig av brukers valg.
 rom = "rom1"
@@ -164,6 +165,22 @@ rom11_utforsk_tekst = (
     "Luken, som ser relativt solid ut, har et messingskilt på seg."
 )
 
+# Dict som kobler rom til utforsk tekstene:
+utforsk_tekster = {
+    "rom1": rom1_utforsk_tekst,
+    "rom2": rom2_utforsk_tekst,
+    "rom3": rom3_utforsk_tekst,
+    "rom4": rom4_utforsk_tekst,
+    "gang1": gang1_utforsk_tekst,
+    "rom5": rom5_utforsk_tekst,
+    "rom6": rom6_utforsk_tekst,
+    "rom7": rom7_utforsk_tekst,
+    "rom8": rom8_utforsk_tekst,
+    "rom9": rom9_utforsk_tekst,
+    "rom10": rom10_utforsk_tekst,
+    "rom11": rom11_utforsk_tekst,
+}
+
 # Funksjon for beskrivelse av rom
 def rombeskrivelse(romnavn, inngang, utforsk, besøkt):
     if not besøkt[romnavn]:
@@ -189,17 +206,21 @@ besøkt = {
 # Dict for interagerbare objekter
 status = {
     "har_hammer": False,
-    "har_brekkjern": False,
-    "har_nøkkel": False,
-    "rom3_skap": False,
+    "rom2_skap": False,
     "tall1": False,
     "tall2": False,
     "tall3": False,
     "åpen_ventil": False,
-    "falsk_nøkkel": False,
-    "glødende_sopp": False,
     "bøtte": False,
     "åpen_hylle": False,
+}
+
+# Dict for interagerbare objekter
+inventar = {
+    "har_brekkjern": False,
+    "har_nøkkel": False,
+    "falsk_nøkkel": False,
+    "glødende_sopp": False,
     "kart": False
 }
 
@@ -250,6 +271,36 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     elif valg == "lagre":
         lagre_spill(besøkt, status, rom)
 
+# Parser for to-ords kommandoer
+def parse_kommando():
+    while True:
+        kommando_input = input("> ").strip().lower()
+        kommando = kommando_input.split()
+
+        # Dersom input er kun ett ord
+        if len(kommando) == 1:
+            ord1 = kommando[0]
+            if ord1 in ["hjelp", "utforsk", "tallkode", "lagre"]:
+                hjelp_og_utforsk(ord1, hjelp, utforsk_tekster[rom], status)
+            else:
+                print(ugyldig)
+                continue
+        
+        # Dersom input er to ord
+        elif len(kommando) == 2:
+            verb, obj = kommando
+            if verb not in ["gå", "se", "ta", "bruk"]:
+                print(f"Kjenner ikke kommandoen {verb}.")
+                continue
+            if obj not in gyldige_valg_i_rom[rom]:
+                print(f"Jeg forstår ikke hva du mener med {obj}.")
+                continue
+            return verb, obj
+        
+        # Dersom input er ugyldig
+        else:
+            print(ugyldig)
+    
 # Funksjon for når spilleren taper spillet
 def tap_restart(tapmelding):
     print(tapmelding)

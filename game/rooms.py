@@ -5,50 +5,73 @@ import engine
 # Funksjon for rom1
 def rom1(rom, restart, besøkt):
     besøkt = engine.rombeskrivelse("rom1", engine.rom1_inngang_tekst, engine.rom1_utforsk_tekst, besøkt)
-    while True: # Separat løkke for rom1
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom1"], engine.ugyldig)
+    while True: 
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom1_utforsk_tekst, engine.status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom1_utforsk_tekst, engine.status)
             continue
 
-        if valg == "øst":
-            rom = "rom2"
-            break  # går videre til rom2
-        elif valg == "vindu":
-            restart, rom = engine.tap_restart("Du klatrer stigen opp mot vinduet. Idet du når toppen, knekker den sammen under deg. Du faller på nakken og alt går umiddelbart i svart.")
-            break  # bryt rom1-løkka for å håndtere restart eller quit
-        else:
-            print(engine.ugyldig)
+        if verb == "gå":
+            if obj == "øst":
+                rom = "rom2"
+                break
+            else:
+                print(engine.ingen_vei)
+                break
+
+        if verb == "se":
+            if obj == "vindu":
+                valg = input("Stigen under vinduet ser solid ut. Vil du forsøke å klatre? (ja/nei) ").strip().lower()
+                if valg == "ja":
+                    restart, rom = engine.tap_restart("Du klatrer stigen opp mot vinduet. Idet du når toppen, knekker den sammen under deg. Du faller på nakken og alt går umiddelbart i svart.")
+                    break
+                elif valg == "nei":
+                    break
+                else:
+                    print(engine.ugyldig)
+
     return rom, restart, besøkt
 
 # Funksjon for rom2
 def rom2(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom2", engine.rom2_inngang_tekst, engine.rom2_utforsk_tekst, besøkt)
+
     while True:  
+        verb, obj = engine.parse_kommando()
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom2"], engine.ugyldig)
-
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom2_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom2_utforsk_tekst, status)
             continue
         
-        if valg == "nord":
-            rom = "rom3"
-            break 
-        elif valg == "skap":
-            if not status["rom3_skap"]:
-                print("Du åpner skapdørene, og støkker idet et rustent strykebrett faller over deg.\nEtter at nervene roer seg kikker du rundt i skapet, men ser ingenting av interesse.")
-                status["rom3_skap"] = True
+        if verb == "gå":
+            if obj == "nord":
+                rom = "rom3"
+                break
+            elif obj == "øst":
+                restart, rom = rom2_ost(restart)
+                if restart:
+                    break
             else:
-                print("Vaskebrettet ligger på gulvet, resten av skapet er uinteressant.")
-        elif valg == "arbeidsbenk":
-            rom2_arbeidsbenk(status)
-        elif valg == "øst":
-            restart, rom = rom2_ost(restart)
-            if restart:
-                break 
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj == "skap":
+                if not status["rom2_skap"]:
+                    print("Du åpner skapdørene, og støkker idet et rustent strykebrett faller over deg.\nEtter at nervene roer seg kikker du rundt i skapet, men ser ingenting av interesse.")
+                    status["rom2_skap"] = True
+                else:
+                    print("Vaskebrettet ligger på gulvet, resten av skapet er uinteressant.")
+            elif obj == "arbeidsbenk":
+                rom2_arbeidsbenk(status)
+
+        elif verb == "bruk":
+            if obj in engine.inventar and engine.inventar[obj]:
+                print(f"Du prøver å bruke {obj}, men det fungerer ikke her.")
+            else:
+                print("Du har ikke det objektet i inventaret.")
+                
         else:
             print(engine.ugyldig)
     return rom, restart, status, besøkt
@@ -56,14 +79,31 @@ def rom2(rom, restart, status, besøkt):
 # Funksjon for arbeidsbenken i rom2
 def rom2_arbeidsbenk(status):
     if not status["har_hammer"]:
+        print("Arbeidsbenken består av relativt råttent treverk. Det ligger en hammer på den ene siden.")
         while True:
-            svar = input("Arbeidsbenken består av relativt råttent treverk. Det ligger en hammer på den ene siden. Hva gjør du? ").lower().strip()
-            if svar == "hjelp":
-                print(engine.hjelp)
-            elif svar == "hammer":
-                print("Idet du plukker opp hammeren, smuldrer treskaftet opp...")
-                status["har_hammer"] = True
-                break
+            
+            kommando_input = input("> ").strip().lower()
+            kommando = kommando_input.split()
+
+            if len(kommando) == 1:
+                ord1 = kommando[0]
+                if ord1 == "hjelp":
+                    print(engine.hjelp)
+                    continue
+                else:
+                    print(engine.ugyldig)
+                    continue
+
+            elif len(kommando) == 2:
+                verb, obj = kommando
+                if verb == "ta" and obj == "hammer":
+                    print("Idet du plukker opp hammeren, smuldrer treskaftet opp...")
+                    status["har_hammer"] = True
+                    break
+                else:
+                    print("Forstår ikke kommandoen din.")
+                    continue
+
             else:
                 print(engine.ugyldig)
     else:
@@ -125,7 +165,7 @@ def rom3_malingsspann(status):
                 status["har_nøkkel"] = True 
                 break
         else:
-            print("En haug med gamle malingsspann.") 
+            print("En haug med gamle malingsspan    n.") 
         break
     
     return status
