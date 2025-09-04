@@ -29,11 +29,14 @@ def lagre_spill(besøkt, status, rom):
         fil.write("#status\n")
         for key, value in status.items():
             fil.write(f"{key}={value}\n")
+        fil.write("#inventar\n")
+        for key, value in inventar.items():
+            fil.write(f"{key}={value}\n")
         fil.write("#rom\n")
         fil.write(f"{rom}")
     print("Spillet ditt er lagret!")
 
-# Laste inn spillstaturs
+# Laste inn spillstatus
 def last_inn_spill():
     global besøkt, status, rom 
     if not os.path.exists(lagret_spill):
@@ -48,6 +51,8 @@ def last_inn_spill():
                     seksjon = "besøkt"
                 elif linje == "#status":
                     seksjon = "status"
+                elif linje == "#inventar":
+                    seksjon = "inventar"
                 elif linje == "#rom":
                     seksjon = "rom"
                 continue
@@ -58,6 +63,9 @@ def last_inn_spill():
             elif seksjon == "status":
                 key, value = linje.split("=")
                 status[key] = value == "True"
+            elif seksjon == "inventar":
+                key, value = linje.split("=")
+                inventar[key] = value == "True"
             elif seksjon == "rom":
                 rom = linje
 
@@ -214,16 +222,26 @@ status = {
     "åpen_ventil": False,
     "bøtte": False,
     "åpen_hylle": False,
+    "hengelås": False
 }
 
-# Dict for interagerbare objekter
+# Dict for gjenstander som går i inventaret
 inventar = {
-    "har_brekkjern": False,
+    "brekkjern": False,
     "har_nøkkel": False,
     "falsk_nøkkel": False,
     "glødende_sopp": False,
     "kart": False
 }
+
+# Funksjon som sjekker om det spiller forsøker å bruke er en key i inventar-dicten og om verdien er truthy
+def har_gjenstand(obj):
+    return obj in inventar and inventar[obj]
+
+# Feilmelding som printes om 
+def bruk_feilmelding(obj):
+    return f"Du prøver å bruke {obj}, men det fungerer ikke her."
+
 
 # Funksjon som lister opp tallene spilleren har funnet
 def tallkode_funnet(status):
@@ -244,9 +262,9 @@ def tallkode_funnet(status):
 # Dict for gyldige valg i hvert rom
 gyldige_valg_i_rom = {
     "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom2": ["nord", "skap", "arbeidsbenk", "hammer", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom4": ["øst", "vest", "trapp", "dør", "skrivebord", "hengelås", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
     "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom5": ["sør", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
