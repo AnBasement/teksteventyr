@@ -426,26 +426,43 @@ def rom6(rom, restart, status, besøkt):
 # Funksjon for rom 7 - monsterkjelleren
 def rom7(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom7", engine.rom7_inngang_tekst, engine.rom7_utforsk_tekst, besøkt)
-    while True:
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom7"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom7_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom7_utforsk_tekst, status)
             continue
+        
+        elif verb == "gå":
+            if obj == "nord":
+                rom = "gang1"
+                break
+            else:
+                print(engine.ingen_vei)
 
-        if valg == "nord":
-            rom = "gang1"
-            break
-        elif valg == "plastsekker":
-            print("Fem stappfulle plastsekker er stablet opp langs den ene veggen. Du roter litt oppi noen av dem, men gir opp når hendene dine blir klissete.")
-        elif valg == "vinskap":
-            print("Det er ikke første gang du ser et vinskap, men det er første gang du ser et vinskap fult av forskjellige energidrikker. Noen av dem har støv på seg og ser gamle ut.")
-        elif valg == "fermenteringsbeholder":
-            print("I det ene hjørnet bobler det i vei i det du bare kan anta er et forsøk på å lage vin av energidrikk. Du tar et lite sniff og rynker på nesen, frister ikke særlig.")
-        elif valg == "oppslagstavle":
-            print("Det henger et par forskjellige lapper på oppslagstavlen som ser ut til å indikere datoer på tidligere og det nåværende fermenteringsprosjektet.\n" \
-                  "På en gul lapp står det '!NB! Esker, skap, såpe!'")
+        elif verb == "se":
+            if obj == "plastsekker":
+                print("Fem stappfulle plastsekker er stablet opp langs den ene veggen. Du roter litt oppi noen av dem, men gir opp når hendene dine blir klissete.")
+            elif obj == "vinskap":
+                print("Det er ikke første gang du ser et vinskap, men det er første gang du ser et vinskap fult av forskjellige energidrikker. Noen av dem har støv på seg og ser gamle ut.")
+            elif obj == "fermenteringsbeholder":
+                print("I det ene hjørnet bobler det i vei i det du bare kan anta er et forsøk på å lage vin av energidrikk. Du tar et lite sniff og rynker på nesen, frister ikke særlig.")
+            elif obj == "oppslagstavle":
+                print("Det henger et par forskjellige lapper på oppslagstavlen som ser ut til å indikere datoer på tidligere og det nåværende fermenteringsprosjektet.\n" \
+                    "På en gul lapp står det '!NB! Esker, skap, såpe!'")
+                
+        elif verb == "ta":
+            if obj == "plastsekker":
+                print("Du plukker opp en plastsekk, som umiddelbart revner.")
+            elif obj == "fermenteringsbeholder":
+                print("Du prøver å løfte på den store fermenteringsbeholderen, men den klissete utsiden og mangelen på håndtak gjør det umulig.")
+            elif obj == "oppslagstavle":
+                print("Du vurderer et øyeblikk å rive ned oppslagstavlen, men ser ikke for deg hvorfor du skulle bært den rundt.")
+
+        else:
+            print(engine.ugyldig)
+            
     return rom, restart, status, besøkt
             
 # Funksjon for rom 8 - Fyrrommet
