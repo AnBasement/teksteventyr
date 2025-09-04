@@ -267,7 +267,7 @@ def rom4(rom, restart, status, besøkt):
                     restart, rom = engine.tap_restart("Med litt makt klarer du å presse nøkkelen du fant inn i nøkkelhullet.\n"
                     "Du rister litt i nøkkelen i et forsøk på å vri den rundt, men nøkkelen knekker. Plutselig uler en alarm gjennom kjelleren.\n"
                     "Du hører en rytmisk dundring som blir høyere, og et gutturalt rop. Du rekker knapt å snu deg for å se inn i et fettete, kvisete ansikt før alt går i sort.")
-                    return restart, rom
+                    return rom, restart, status, besøkt
                 elif engine.inventar["har_nøkkel"]:
                     print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
                     "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
@@ -275,7 +275,7 @@ def rom4(rom, restart, status, besøkt):
                 while True:
                     valg_restart = input(engine.omstart).strip().lower()
                     if valg_restart == "ja":
-                        return True, "rom1" 
+                        return True, "rom1", status, besøkt
                     elif valg_restart == "nei":
                         quit()
                     else:
