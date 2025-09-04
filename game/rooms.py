@@ -553,28 +553,45 @@ def rom8(rom, restart, status, besøkt):
 # Funksjon for rom 9
 def rom9(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom9", engine.rom9_inngang_tekst, engine.rom9_utforsk_tekst, besøkt)
-    while True:
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom9"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom9_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom9_utforsk_tekst, status)
             continue
+        
+        elif verb == "gå":
+            if obj == "sør":
+                rom = "rom6"
+                break
 
-        if valg == "sør":
-            rom = "rom6"
-            break
-        elif valg in ["sopp", "glødende sopp"]:
-            print("Du tar tak i en av soppene og napper til. Gratulerer, du har en glødende sopp! Kanskje best å ikke smake på...")
-            status["glødende_sopp"] = True
-        elif valg == "bøtte":
-            if not status["bøtte"]:
-                print("Du nærmer deg bøtten og kjenner en underlig dunts som gjør det litt vanskelig å puste. Idet du forsøker å plukke den opp faller bunnen ut,\n" \
-                "og innholdet flyter utover gulvet.")
-                status["bøtte"] = True
-            else:
-                print("Gulvet er dekket av en mørk, klissete substans og bøtten ligger henslengt på siden.")
-    
+        elif verb == "se":
+            if obj in ["sopp", "glødende sopp"]:
+                print("Du tar en nærmere titt på soppen som vokser på veggene og taket. De gløder sterkt, og noen ser nesten ut til å ha ansikter.")
+            elif obj == "bøtte":
+                print("Bøtten i hjørnet er nesten fylt til randen med en mørk, illeluktende væske.")
+
+        elif verb == "ta":
+            if obj in ["sopp", "glødende sopp"]:
+                print("Du tar tak i en av soppene og napper til. Gratulerer, du har en glødende sopp! Kanskje best å ikke smake på...")
+                status["glødende_sopp"] = True
+            elif obj == "bøtte":
+                if not status["bøtte"]:
+                    print("Du nærmer deg bøtten og kjenner en illeluktende dunts som gjør det litt vanskelig å puste. Idet du forsøker å plukke den opp faller bunnen ut,\n" \
+                    "og innholdet flyter utover gulvet.")
+                    status["bøtte"] = True
+                    engine.rom9_utforsk_tekst = ("Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
+                    "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne er det en stor pytt med mørk gugge.\n" \
+                    "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
+                    )
+                    engine.utforsk_tekster["rom9"] = engine.rom9_utforsk_tekst
+                else:
+                    print("Du ser ikke poenget i å plukke opp en bunnløs bøtte.")
+
+        else:
+            print(engine.ugyldig)
+            
     return rom, restart, status, besøkt
 
 # Funksjon for rom 10

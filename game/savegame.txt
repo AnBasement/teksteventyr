@@ -7,7 +7,7 @@ gang1=True
 rom5=True
 rom6=True
 rom7=False
-rom8=False
+rom8=True
 rom9=False
 #status
 har_hammer=False
@@ -18,12 +18,12 @@ tall3=False
 åpen_ventil=False
 bøtte=False
 åpen_hylle=False
-hengelås=False
+hengelås=True
 #inventar
-brekkjern=False
+brekkjern=True
 har_nøkkel=False
 falsk_nøkkel=False
 glødende_sopp=False
 kart=False
 #rom
-rom6
+rom8
