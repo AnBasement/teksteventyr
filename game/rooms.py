@@ -565,12 +565,16 @@ def rom9(rom, restart, status, besøkt):
             if obj == "sør":
                 rom = "rom6"
                 break
+            else:
+                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["sopp", "glødende sopp"]:
                 print("Du tar en nærmere titt på soppen som vokser på veggene og taket. De gløder sterkt, og noen ser nesten ut til å ha ansikter.")
             elif obj == "bøtte":
                 print("Bøtten i hjørnet er nesten fylt til randen med en mørk, illeluktende væske.")
+            else:
+                print(engine.ugyldig)
 
         elif verb == "ta":
             if obj in ["sopp", "glødende sopp"]:
@@ -597,63 +601,83 @@ def rom9(rom, restart, status, besøkt):
 # Funksjon for rom 10
 def rom10(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom10", engine.rom10_inngang_tekst, engine.rom10_utforsk_tekst, besøkt)
-    while True:
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom10"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom10_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom10_utforsk_tekst, status)
             continue
-
-        if valg == "vest":
-            rom = "rom5"
-            break
-        elif valg in ["aviser", "magasiner"]:
-            print("Du ser kjapt gjennom stablene med aviser og magasiner, men uten å finne noe særlig av interesse. Med mindre du er interesert i Tysvær Bygdablad eller gamle utgaver av Autofil.")
-        elif valg in ["bøker", "hyller"]:
-            print("Bokhyllene og bøkene i dem er dekket av et tykt lag støv. Du blåser på noen av dem, og ser at det stort sett er 'Animorphs'-bøker.")
-        elif valg == "pult":
-            rom = rom10_pult(status)
-            break
-
-    return rom, restart, status, besøkt
-
-# Funksjon for pult i rom 10
-def rom10_pult(status):
-    while True:         
-        svar = input("På pulten ligger det en gammel pizzaeske, en manual og en haug med avisutklipp. Hva vil du gjøre? ")
-
-        if svar == "pizzaeske":
-            if not status["kart"]:
-                print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
-                status["kart"] = True
+        
+        if verb == "gå":
+            if obj == "vest":
+                rom = "rom5"
+                break
             else:
-                print("En pizzaeske med et hull hvor det tidligere var et kart.")
-        elif svar == "manual":
-            print("På den slitte gamle manualen står det i store bokstaver, 'OLJEOVN m.1977'. Du prøver å plukke den opp, men ombestemmer deg sidene begynner å falle ut.")
-        elif svar == "avisutklipp":
-            print("Du romsterer forsiktig gjennom haugen av avisutklipp. De fleste er gamle spillanmeldelser hvor terningkastet er skrablet over, men noen handler om rapporter om uvanlige lyder fra et nedslitt hus.")
-        return status
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj in ["aviser", "magasiner"]:
+                print("Du ser kjapt gjennom stablene med aviser og magasiner, men uten å finne noe særlig av interesse. Med mindre du er interesert i Tysvær Bygdablad eller gamle utgaver av Autofil.")
+            elif obj in ["bøker", "hyller"]:
+                print("Bokhyllene og bøkene i dem er dekket av et tykt lag støv. Du blåser på noen av dem, og ser at det stort sett er 'Animorphs'-bøker.")
+            elif obj == "pult":
+                print("På pulten ligger det en gammel pizzaeske, en manual og en haug med avisutklipp. ")
+            elif obj == "pizzaeske":
+                if not status["kart"]:
+                    print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
+                    status["kart"] = True
+                else:
+                    print("En pizzaeske med et hull hvor det tidligere var et kart.")
+            elif obj == "manual":
+                print("På den slitte gamle manualen står det i store bokstaver, 'OLJEOVN m.1977'. Du prøver å plukke den opp, men ombestemmer deg sidene begynner å falle ut.")
+            elif obj == "avisutklipp":
+                print("Du romsterer forsiktig gjennom haugen av avisutklipp. De fleste er gamle spillanmeldelser hvor terningkastet er skrablet over, men noen handler om rapporter om uvanlige lyder fra et nedslitt hus.")
+            else:
+                print(engine.ugyldig)
+
+        else:
+            print(engine.ugyldig)
+            
+    return rom, restart, status, besøkt
     
 # Funksjon for rom 11
 def rom11(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom11", engine.rom11_inngang_tekst, engine.rom11_utforsk_tekst, besøkt)
-    while True:
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom11"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom11_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom11_utforsk_tekst, status)
             continue
+        
+        if verb == "gå":
+            if obj == "nord":
+                rom = "rom8"
+                break
+            else:
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj == "fotspor":
+                print("Fotsporene leder frem og tilbake mellom luken og døren, og ser relativt ferske ut sammenlignet med resten av rommet.")
+            elif obj == "luke":
+                print("Luken er låst med ikke bare én, men tre hengelåser. To trenger en nøkkel, og den tredje trenger en 4-sifret kode. Du forsøker å dra i den, uten hell.")
+            elif obj in ["skilt", "messingskilt"]:
+                print("Du tørker litt støv og rusk av messingskiltet og leser det. 'ADGANG KUN FOR ALFAMENN!!'")
+            else:
+                print(engine.ugyldig)
 
-        if valg == "nord":
-            rom = "rom8"
-            break
-        elif valg == "fotspor":
-            print("Fotsporene leder frem og tilbake mellom luken og døren, og ser relativt ferske ut sammenlignet med resten av rommet.")
-        elif valg == "luke":
-            print("Luken er låst med ikke bare én, men tre hengelåser. To trenger en nøkkel, og den tredje trenger en 4-sifret kode. Du forsøker å dra i den, uten hell.")
-        elif valg in ["skilt", "messingskilt"]:
-            print("Du tørker litt støv og rusk av messingskiltet og leser det. 'ADGANG KUN FOR ALFAMENN!!'")
+        elif verb == "ta":
+            if obj == "fotspor":
+                print("Du forsøker å samle sammen støvet rundt fotsporet før du tar deg selv i å lure på hva du holder på med.")
+            elif obj == "luke":
+                print("Du river og sliter litt i luken uten hell.")
+            elif obj in ["skilt", "messingskilt"]:
+                print("Du prøver å pirke opp skiltet, men får ikke grep.")
 
+        else:
+            print(engine.ugyldig)
+            
     return rom, restart, status, besøkt
