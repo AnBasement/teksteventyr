@@ -298,29 +298,35 @@ def rom4(rom, restart, status, besøkt):
 # Funksjon for gang1
 def gang1(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("gang1", engine.gang1_inngang_tekst, engine.gang1_utforsk_tekst, besøkt)
-    while True:
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["gang1"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.gang1_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom2_utforsk_tekst, status)
             continue
-
-        if valg == "sør":
-            rom = "rom3"
-            break 
-        elif valg == "nordvest":
-            rom = "rom6"
-            break 
-        elif valg == "nordøst":
-            rom = "rom5"
-            break 
-        elif valg == "sørøst":
-            rom = "rom7"
-            break 
-        elif valg == "sørvest":
-            rom = "rom8"
-            break 
+        
+        if verb == "gå":
+            if obj == "sør":
+                rom = "rom3"
+                break 
+            elif obj == "nordvest":
+                rom = "rom6"
+                break 
+            elif obj == "nordøst":
+                rom = "rom5"
+                break 
+            elif obj == "sørøst":
+                rom = "rom7"
+                break 
+            elif obj == "sørvest":
+                rom = "rom8"
+                break 
+            else:
+                print(engine.ingen_vei)
+                
+        else:
+            print(engine.ugyldig)
     return rom, restart, status, besøkt
 
 # Funksjon for rom5
