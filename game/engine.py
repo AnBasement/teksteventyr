@@ -12,6 +12,7 @@ tap = "Kjellerbeistet tok deg, og omverdenen hører aldri fra deg igjen."
 spiller_prompt = "Hva vil du gjøre? "
 hjelp = "Spillet godkjenner bare kommandoer med to ord, som må starte med 'gå', 'se', 'ta', eller 'bruk' – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
 ingen_vei = "Det er ingen vei i den retningen."
+not_objekt = "Du har ikke det i inventaret."
 
 # Variabel for rommet man befinner seg i. Begynner på "rom1" og endres avhengig av brukers valg.
 rom = "rom1"
@@ -271,7 +272,7 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     elif valg == "lagre":
         lagre_spill(besøkt, status, rom)
 
-# Parser for to-ords kommandoer
+# Parser for to- og tre-ords kommandoer
 def parse_kommando():
     while True:
         kommando_input = input("> ").strip().lower()
@@ -284,19 +285,47 @@ def parse_kommando():
                 hjelp_og_utforsk(ord1, hjelp, utforsk_tekster[rom], status)
             else:
                 print(ugyldig)
-                continue
-        
+            continue
+
         # Dersom input er to ord
         elif len(kommando) == 2:
             verb, obj = kommando
+
             if verb not in ["gå", "se", "ta", "bruk"]:
                 print(f"Kjenner ikke kommandoen {verb}.")
                 continue
+
+            # Om spiller "bruker" en gjenstand uten å skrive inn mål
+            if verb == "bruk" and obj in inventar and inventar[obj]:
+                print(f"Hva vil du bruke {obj} på?")
+                mål = input("> ").strip().lower()
+
+                if mål not in gyldige_valg_i_rom[rom]:
+                    print(f"Jeg ser ingen {mål} her.")
+                    continue
+                return verb, (obj, mål)
+
+            # Vanlige verb-objekt kommandoer
             if obj not in gyldige_valg_i_rom[rom]:
                 print(f"Jeg forstår ikke hva du mener med {obj}.")
                 continue
             return verb, obj
-        
+
+        # Dersom input er tre ord
+        elif len(kommando) == 3:
+            verb, obj1, obj2 = kommando
+            if verb == "bruk":
+                if obj1 not in inventar or not inventar[obj1]:
+                    print(f"Du har ikke {obj1} i inventaret.")
+                    continue
+                if obj2 not in gyldige_valg_i_rom[rom]:
+                    print(f"Jeg ser ingen {obj2} her.")
+                    continue
+                return verb, (obj1, obj2)
+            else:
+                print(ugyldig)
+                continue
+
         # Dersom input er ugyldig
         else:
             print(ugyldig)
