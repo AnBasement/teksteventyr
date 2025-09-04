@@ -26,4 +26,4 @@ falsk_nøkkel=False
 glødende_sopp=False
 kart=False
 #rom
-rom3
+rom6

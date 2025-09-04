@@ -382,44 +382,46 @@ def rom5(rom, restart, status, besøkt):
 # Funksjon for rom6
 def rom6(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom6", engine.rom6_inngang_tekst, engine.rom6_utforsk_tekst, besøkt)
-    while True: 
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom6"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom6_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom6_utforsk_tekst, status)
             continue
-
-        if valg == "sør":
-            rom = "gang1"
-            break
-        elif valg == "nord":
-            rom = "rom9"
-            break
-        elif valg in ["vaskemaskiner", "vaskemaskin"]:
-            print("Vaskemaskinene er i dårlig stand, og tydeligvis ikke brukt på en stund. Det ligger en haug med råtne klær i den ene, og ingen av dem reagerer når du trykker på knappene.")
-        elif valg == "hyller":
-            print("Du ser fort over hyllene etter noe som kan hjelpe deg, men ser stort sett bare forskjellige vaskemidler av merket '2MO'.")
-            status["tall3"] = True
-        elif valg in ["rør", "hjul"]:
-            restart, rom = rom6_hjul(restart)
-            if restart:
+        
+        elif verb == "gå":
+            if obj == "sør":
+                rom = "gang1"
                 break
-    return rom, restart, status, besøkt
+            elif obj == "nord":
+                rom = "rom9"
+            else:
+                print(engine.ingen_vei)
 
-# Funksjon for å velge hjul eller rør i rom 6
-def rom6_hjul(restart):
-    while True:
-        svar = input("Det største av rørene har et rødt hjul festet til seg. Du tar borti røret, og kan kjenne at det beveger seg vann gjennom det. Vil du vri på hjulet? (ja/nei) ").lower().strip()
-        if svar == "ja":
-            restart, rom = engine.tap_restart("Med noe makt klarer du å vri om på hjulet. Det begynner umiddelbart å fosse vann ut av vaskemaskinene, og et gitter smeller ned foran døren.\n" \
-            "Du prøver desperat å snu hjulet tilbake, men det sitter låst fast. Du forsøker å rive opp gitteret, men det rikker seg ikke.\n" \
-            "Det tar bare noen sekunder før rommet er fylt med vann. Uten luft svelger du ned vann, og alt går i sort.")
-            return restart, rom
-        elif svar == "nei":
-            return False, "rom6" 
+        elif verb == "se":
+            if obj in ["vaskemaskiner", "vaskemaskin"]:
+                print("Vaskemaskinene er i dårlig stand, og tydeligvis ikke brukt på en stund. Det ligger en haug med råtne klær i den ene, og ingen av dem reagerer når du trykker på knappene.")
+            elif verb == "hyller":
+                print("Du ser fort over hyllene etter noe som kan hjelpe deg, men ser stort sett bare forskjellige vaskemidler av merket '2MO'.")
+                status["tall3"] = True
+            elif obj in ["rør", "hjul"]:
+                svar = input("Det største av rørene har et rødt hjul festet til seg. Du tar borti røret, og kan kjenne at det beveger seg vann gjennom det. Vil du vri på hjulet? (ja/nei) ").lower().strip()
+                if svar == "ja":
+                    restart, rom = engine.tap_restart("Med noe makt klarer du å vri om på hjulet. Det begynner umiddelbart å fosse vann ut av vaskemaskinene, og et gitter smeller ned foran døren.\n" \
+                    "Du prøver desperat å snu hjulet tilbake, men det sitter låst fast. Du forsøker å rive opp gitteret, men det rikker seg ikke.\n" \
+                    "Det tar bare noen sekunder før rommet er fylt med vann. Uten luft svelger du ned vann, og alt går i sort.\n")
+                    return rom, restart, status, besøkt
+                elif svar == "nei":
+                    rom = "rom6"
+                    restart = False
+                    return rom, restart, status, besøkt
+                else:
+                    print(engine.ugyldig)
+
         else:
             print(engine.ugyldig)
+    return rom, restart, status, besøkt
 
 # Funksjon for rom 7 - monsterkjelleren
 def rom7(rom, restart, status, besøkt):
