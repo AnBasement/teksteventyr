@@ -10,7 +10,9 @@ ugyldig = "Ugyldig svar, prøv igjen. "
 omstart = "Vil du spille igjen? (ja/nei) "
 tap = "Kjellerbeistet tok deg, og omverdenen hører aldri fra deg igjen."
 spiller_prompt = "Hva vil du gjøre? "
-hjelp = "Spillet liker bare ett-ords kommandoer – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
+hjelp = "Spillet godkjenner bare kommandoer med to ord, som må starte med 'gå', 'se', 'ta', eller 'bruk' – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
+ingen_vei = "Det er ingen vei i den retningen."
+not_objekt = "Du har ikke det i inventaret."
 
 # Variabel for rommet man befinner seg i. Begynner på "rom1" og endres avhengig av brukers valg.
 rom = "rom1"
@@ -27,11 +29,14 @@ def lagre_spill(besøkt, status, rom):
         fil.write("#status\n")
         for key, value in status.items():
             fil.write(f"{key}={value}\n")
+        fil.write("#inventar\n")
+        for key, value in inventar.items():
+            fil.write(f"{key}={value}\n")
         fil.write("#rom\n")
         fil.write(f"{rom}")
     print("Spillet ditt er lagret!")
 
-# Laste inn spillstaturs
+# Laste inn spillstatus
 def last_inn_spill():
     global besøkt, status, rom 
     if not os.path.exists(lagret_spill):
@@ -46,6 +51,8 @@ def last_inn_spill():
                     seksjon = "besøkt"
                 elif linje == "#status":
                     seksjon = "status"
+                elif linje == "#inventar":
+                    seksjon = "inventar"
                 elif linje == "#rom":
                     seksjon = "rom"
                 continue
@@ -56,6 +63,9 @@ def last_inn_spill():
             elif seksjon == "status":
                 key, value = linje.split("=")
                 status[key] = value == "True"
+            elif seksjon == "inventar":
+                key, value = linje.split("=")
+                inventar[key] = value == "True"
             elif seksjon == "rom":
                 rom = linje
 
@@ -135,7 +145,7 @@ rom5_utforsk_tekst = (
     "Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. En sliten hylle står lent mot østveggen. En dør leder sør."
 )
 rom6_utforsk_tekst = (
-    "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskamaskiner stablet opp langs den ene veggen.\n" \
+    "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskmaskiner stablet opp langs den ene veggen.\n" \
     "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n" \
     "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
 )
@@ -164,12 +174,28 @@ rom11_utforsk_tekst = (
     "Luken, som ser relativt solid ut, har et messingskilt på seg."
 )
 
+# Dict som kobler rom til utforsk tekstene:
+utforsk_tekster = {
+    "rom1": rom1_utforsk_tekst,
+    "rom2": rom2_utforsk_tekst,
+    "rom3": rom3_utforsk_tekst,
+    "rom4": rom4_utforsk_tekst,
+    "gang1": gang1_utforsk_tekst,
+    "rom5": rom5_utforsk_tekst,
+    "rom6": rom6_utforsk_tekst,
+    "rom7": rom7_utforsk_tekst,
+    "rom8": rom8_utforsk_tekst,
+    "rom9": rom9_utforsk_tekst,
+    "rom10": rom10_utforsk_tekst,
+    "rom11": rom11_utforsk_tekst,
+}
+
 # Funksjon for beskrivelse av rom
 def rombeskrivelse(romnavn, inngang, utforsk, besøkt):
     if not besøkt[romnavn]:
-        print(inngang)       # Printes kun første gang
+        print(inngang) 
         besøkt[romnavn] = True
-    print(utforsk)            # Printes hver gang spilleren går inn
+    print(utforsk)
     return besøkt
 
 # Dict med oversikt over besøkte rom
@@ -189,19 +215,33 @@ besøkt = {
 # Dict for interagerbare objekter
 status = {
     "har_hammer": False,
-    "har_brekkjern": False,
-    "har_nøkkel": False,
-    "rom3_skap": False,
+    "rom2_skap": False,
     "tall1": False,
     "tall2": False,
     "tall3": False,
     "åpen_ventil": False,
-    "falsk_nøkkel": False,
-    "glødende_sopp": False,
     "bøtte": False,
     "åpen_hylle": False,
+    "hengelås": False
+}
+
+# Dict for gjenstander som går i inventaret
+inventar = {
+    "brekkjern": False,
+    "har_nøkkel": False,
+    "falsk_nøkkel": False,
+    "glødende_sopp": False,
     "kart": False
 }
+
+# Funksjon som sjekker om det spiller forsøker å bruke er en key i inventar-dicten og om verdien er truthy
+def har_gjenstand(obj):
+    return obj in inventar and inventar[obj]
+
+# Feilmelding som printes om 
+def bruk_feilmelding(obj):
+    return f"Du prøver å bruke {obj}, men det fungerer ikke her."
+
 
 # Funksjon som lister opp tallene spilleren har funnet
 def tallkode_funnet(status):
@@ -222,11 +262,11 @@ def tallkode_funnet(status):
 # Dict for gyldige valg i hvert rom
 gyldige_valg_i_rom = {
     "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom2": ["nord", "skap", "arbeidsbenk", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom2": ["nord", "skap", "arbeidsbenk", "hammer", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom4": ["øst", "vest", "trapp", "skrivebord", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom4": ["øst", "vest", "trapp", "dør", "skrivebord", "hengelås", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
     "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom5": ["sør", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom5": ["sør", "øst", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"],
@@ -250,6 +290,64 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     elif valg == "lagre":
         lagre_spill(besøkt, status, rom)
 
+# Parser for to- og tre-ords kommandoer
+def parse_kommando():
+    while True:
+        kommando_input = input("> ").strip().lower()
+        kommando = kommando_input.split()
+
+        # Dersom input er kun ett ord
+        if len(kommando) == 1:
+            ord1 = kommando[0]
+            if ord1 in ["hjelp", "utforsk", "tallkode", "lagre"]:
+                hjelp_og_utforsk(ord1, hjelp, utforsk_tekster[rom], status)
+            else:
+                print(ugyldig)
+            continue
+
+        # Dersom input er to ord
+        elif len(kommando) == 2:
+            verb, obj = kommando
+
+            if verb not in ["gå", "se", "ta", "bruk"]:
+                print(f"Kjenner ikke kommandoen {verb}.")
+                continue
+
+            # Om spiller "bruker" en gjenstand uten å skrive inn mål
+            if verb == "bruk" and obj in inventar and inventar[obj]:
+                print(f"Hva vil du bruke {obj} på?")
+                mål = input("> ").strip().lower()
+
+                if mål not in gyldige_valg_i_rom[rom]:
+                    print(f"Jeg ser ingen {mål} her.")
+                    continue
+                return verb, (obj, mål)
+
+            # Vanlige verb-objekt kommandoer
+            if obj not in gyldige_valg_i_rom[rom]:
+                print(f"Jeg forstår ikke hva du mener med {obj}.")
+                continue
+            return verb, obj
+
+        # Dersom input er tre ord
+        elif len(kommando) == 3:
+            verb, obj1, obj2 = kommando
+            if verb == "bruk":
+                if obj1 not in inventar or not inventar[obj1]:
+                    print(f"Du har ikke {obj1} i inventaret.")
+                    continue
+                if obj2 not in gyldige_valg_i_rom[rom]:
+                    print(f"Jeg ser ingen {obj2} her.")
+                    continue
+                return verb, (obj1, obj2)
+            else:
+                print(ugyldig)
+                continue
+
+        # Dersom input er ugyldig
+        else:
+            print(ugyldig)
+    
 # Funksjon for når spilleren taper spillet
 def tap_restart(tapmelding):
     print(tapmelding)
