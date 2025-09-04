@@ -17,6 +17,7 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fikset
 - Endret rom3_skap til rom2_skap.
 - Skrivefeil "oppvaskamaskin" -> "oppvaskmaskin" i rom6.
+- Skrivefeil "dannet" -> "danne et" i rom8.
 
 ---
 

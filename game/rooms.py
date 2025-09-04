@@ -40,7 +40,7 @@ def rom1(rom, restart, besøkt):
             item, target = obj
             if item == "brekkjern" and target == "vindu":
                 print("Du prøver å bruke brekkjernet på vinduet, men det sitter for hardt.")
-            # Andre kombinasjoner går her.
+
             else:
                 print(f"Kan ikke bruke {item} på {target}, men det fungerer ikke her.")
 
@@ -468,84 +468,69 @@ def rom7(rom, restart, status, besøkt):
 # Funksjon for rom 8 - Fyrrommet
 def rom8(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom8", engine.rom8_inngang_tekst, engine.rom8_utforsk_tekst, besøkt)
-    while True: 
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom8"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom8_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom8_utforsk_tekst, status)
             continue
-
-        if valg == "nord":
-            rom = "gang1"
-            break
-        elif valg == "øst":
-            if status["åpen_ventil"]:
-                rom = "rom4"
+        
+        if verb == "gå":
+            if obj == "nord":
+                rom = "gang1"
                 break
-            else:
-                print(engine.ugyldig)
-        elif valg in ["ovn", "oljeovn"]:
-            restart, rom = rom8_oljeovn(restart, status)
-            if restart:
-                break
-        elif valg == "vifte":
-            print("Du ser deg rundt etter noe å klatre på for å nå opp til viften, men finner ingenting. Kanskje like greit, skarpe, roterende, rustne vifter høres ikke så kjekt ut.")
-        elif valg == "rør":
-            print("Forskjellige rør strekker seg fra oljeovnen og opp til taket, antagelig på vei til å spre varme gjennom huset. Noen vibrerer smått, andre er ødelagte, alle er rustne.")
-        elif valg == "oljekanner":
-            if not status["falsk_nøkkel"]:
-                print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
-                  "Du snur den opp ned og rister på den. En gammeldags nøkkel faller ut, som du plukker opp og legger i lommen.")
-                status["falsk_nøkkel"] = True
-            else:
-                print("Et par bulkete og sølete oljekanner.")
-        elif valg == "ventil":
-            if not status["åpen_ventil"]:
-                restart, rom = rom8_ventil(restart, status)
-                if restart:
+            elif obj == "øst":
+                if status["åpen_ventil"]:
+                    rom = "rom4"
                     break
+                else:
+                    print(engine.ingen_vei)
+            elif obj == "sør":
+                if not engine.inventar["glødende_sopp"]:
+                    print("Du åpner døren som leder sør, men rommet er så mørkt at du ikke tør ta steget inn.")
+                else:
+                    rom = "rom11"
             else:
-                print(engine.ugyldig)
-        elif valg == "sør":
-            if not status["glødende_sopp"]:
-                print("Du åpner døren som leder sør, men rommet er så mørkt at du ikke tør ta steget inn.")
-            else:
-                rom = "rom11"
-    return rom, restart, status, besøkt
-
-# Funksjon for oljeovnen i rom 8
-def rom8_oljeovn(restart, status):
-    while True:
-        if not status["brekkjern"]:
-            print("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
-                  "Dersom du hadde hatt et verktøy eller et brekkjern kunne du relativt enkelt ødelagt ovnen.")
-            return False, "rom8"
-        else:
-            svar = input("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.\n" \
-                         "Vil du prøve å ødelegge ovnen med brekkjernet ditt? (ja/nei)").strip().lower()
-            if svar == "ja":
-                restart, rom = engine.tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
-                "Du bestemmer deg for en liten glipe skapt av rust langs toppen av oljeovnen. Du presser brekkjernet inn og legger vekten din på det til du kjenner at det gir etter.\n" \
-                "Du får ikke egentlig med deg hva som skjer. Rommet lyser plutselig opp, og et lite øyeblikk kjenner du en intens varme i ansiktet før det går i sort for deg.")
-                return restart, rom
-            elif svar == "nei":
-                return False, "rom8" 
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj in ["ovn", "oljeovn"]:
+                print("Den gamle oljeovnen er fremdeles i bruk, og flammen sender varme ut til rommene i huset gjennom rør.")
+            elif obj == "vifte":
+                print("Du ser deg rundt etter noe å klatre på for å nå opp til viften, men finner ingenting. Kanskje like greit, skarpe, roterende, rustne vifter høres ikke så kjekt ut.")
+            elif obj == "rør":
+                print("Forskjellige rør strekker seg fra oljeovnen og opp til taket, antagelig på vei til å spre varme gjennom huset. Noen vibrerer smått, andre er ødelagte, alle er rustne.")
+            elif obj == "oljekanner":
+                print("Et par oljekanner er strødd rundt rommet, noen ser eldre ut enn andre.")
+            elif obj == "ventil":
+                print("En stor ventil. Du forsøker å kikke gjennom og tror du ser et annet rom på andre siden.")
             else:
                 print(engine.ugyldig)
 
+        elif verb == "ta":
+            if obj == "oljekanner":
+                if not status["falsk_nøkkel"]:
+                    print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
+                    "Du snur den opp ned og rister på den. En gammeldags nøkkel faller ut, som du plukker opp og legger i lommen.")
+                    status["falsk_nøkkel"] = True
+                else:
+                    print("Du ser ikke noe poeng i å sjekke oljekannene igjen.")
+            elif obj == "ventil":
+                print("Du forsøker å rive litt i ventilen, men får ikke skikkelig grep.")
 
-# Funksjon for ventil i rom 8
-def rom8_ventil(restart, status):
-    while True:
-        if not status["har_brekkjern"]:
-            print("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
-                  "Til tross for rusten klarer du ikke å rive den ut av veggen. Kanskje om du hadde noe kraftigere å bruke.")
-            return False, "rom8"
-        else:
-            svar = input("Du undersøker den rustne ventilen på østveggen og prøver å dannet kart i hodet ditt for å finne ut hva som er på andre siden.\n" \
-                         "Vil du forsøke å fjerne ventilen med brekkjernet? (ja/nei)")
-            if svar == "ja":
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item == "brekkjern" and target in ["ovn", "oljeovn"]:
+                if engine.inventar["brekkjern"]:
+                    restart, rom = engine.tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
+                    "Du bestemmer deg for en liten glipe skapt av rust langs toppen av oljeovnen. Du presser brekkjernet inn og legger vekten din på det til du kjenner at det gir etter.\n" \
+                    "Du får ikke egentlig med deg hva som skjer. Rommet lyser plutselig opp, og et lite øyeblikk kjenner du en intens varme i ansiktet før det går i sort for deg.")
+                    return rom, restart, status, besøkt
+                else:
+                    print(f"Du har ikke {item} i inventaret.")
+                    continue
+            elif item == "brekkjern" and target == "ventil":
                 print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
                       "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
                 status["åpen_ventil"] = True
@@ -559,11 +544,11 @@ def rom8_ventil(restart, status):
                 )
                 engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
                 engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
-                return False, "rom8"
-            elif svar == "nei":
-                return False, "rom8"
-            else:
-                print(engine.ugyldig)
+
+        else:
+            print(engine.ugyldig)
+            
+    return rom, restart, status, besøkt
 
 # Funksjon for rom 9
 def rom9(rom, restart, status, besøkt):
