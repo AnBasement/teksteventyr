@@ -6,7 +6,7 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.3.1]
+## [1.3.1] - 2025-09-04
 ### Endret
 - Går bort fra tidligere kommandoer på ett ord.
     - Spiller kan nå velge mellom å 'se' på en gjenstand og 'ta' en gjenstand.
