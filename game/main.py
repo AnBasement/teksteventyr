@@ -28,7 +28,7 @@ Om du trenger hjelp kan du skrive 'hjelp' for en liste over godkjente kommandoer
 
 # Krever at spiller skriver "start" for å begynne
 while True:
-    start = input('Skriv "start" for å begynne, eller "last inn" for å laste inn et tidligere spill. ').strip().lower()
+    start = input('Skriv "start" for å begynne, eller "last inn" for å laste inn et tidligere spill.\n> ').strip().lower()
     if start == "start":
         break
     elif start == "last inn":

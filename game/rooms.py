@@ -196,23 +196,13 @@ def rom3_malingsspann(status, verb):
 
 # Funksjon for rom4
 def rom4(rom, restart, status, besøkt):
-    if not besøkt["rom4"]:
-        print(engine.rom4_inngang_tekst)
-        besøkt["rom4"] = True
+    besøkt = engine.rombeskrivelse("rom4", engine.rom4_inngang_tekst, engine.rom4_utforsk_tekst, besøkt)
 
-    if status["åpen_ventil"]:
-        print("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
-    "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
-    "Der er en åpning på østveggen."
-    )
-    else:
-        print(engine.rom4_utforsk_tekst)
-        
-    while True:
+    while True:  
         verb, obj = engine.parse_kommando()
 
         if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom3_utforsk_tekst, status)
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom4_utforsk_tekst, status)
             continue
         
         elif verb == "gå":
@@ -332,51 +322,62 @@ def gang1(rom, restart, status, besøkt):
 # Funksjon for rom5
 def rom5(rom, restart, status, besøkt):
     besøkt = engine.rombeskrivelse("rom5", engine.rom5_inngang_tekst, engine.rom5_utforsk_tekst, besøkt)
-    while True:  # Løkke for rom5
 
-        valg = engine.sjekk_gyldig_valg(engine.spiller_prompt, engine.gyldige_valg_i_rom["rom5"], engine.ugyldig)
+    while True:  
+        verb, obj = engine.parse_kommando()
 
-        if valg in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(valg, engine.hjelp, engine.rom5_utforsk_tekst, status)
+        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom5_utforsk_tekst, status)
             continue
-
-        if valg == "sør":
-            rom = "gang1"
-            break  # gå videre til gang
-        elif valg in ["esker", "kasser"]:
-            print("Du ser over stablene av esker som står spredd langs veggene, i varierende grad av forråtnelse.\n" \
-            "Du åpner noen vilkårlige esker, og finner noen fylt med gamle tegneserier, andre med gamle spill, og underlig nok en tredje full av flasker fylt med en gul væske.")
-        elif valg == "reoler":
-            print("Du går frem og tilbake i rommet og saumfarer hyllene etter noe nyttig.\n" \
-            "På noen av hyllene står det noen gamle lekefigurer, men du finner ingenting av nytte.")
-        elif valg == "skap":
-            print("Bakerst i rommet står det et skap som minner deg om skoledagene dine. Sett bort fra tallet '7' på forsiden er det ingenting uvanlig med det.\n" \
-            "Du tar tak i håndtaket og røsker til, men skapet beveger seg ikke.")
-            status["tall2"] = True
-        elif valg in ["hylle", "hyller"]:
-            restart, rom = rom5_hylle(status)
-        elif valg == "øst":
-            if status["åpen_hylle"]:
-                rom = "rom10"
+        
+        if verb == "gå":
+            if obj == "sør":
+                rom = "gang1"
                 break
+            elif obj == "øst":
+                if status["åpen_hylle"]:
+                    rom = "rom10"
+                    break
+                else:
+                    print(engine.ingen_vei)
             else:
-                print(engine.ugyldig)
-    return rom, restart, status, besøkt
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj in ["esker", "kasser"]:
+                print("Du ser over stablene av esker som står spredd langs veggene, i varierende grad av forråtnelse.\n" \
+                "Du åpner noen vilkårlige esker, og finner noen fylt med gamle tegneserier, andre med gamle spill, og underlig nok en tredje full av flasker fylt med en gul væske.")
+            elif obj == "reoler":
+                print("Du går frem og tilbake i rommet og saumfarer hyllene etter noe nyttig.\n" \
+                "På noen av hyllene står det noen gamle lekefigurer, men du finner ingenting av nytte.")
+            elif obj == "skap":
+                print("Bakerst i rommet står det et skap som minner deg om skoledagene dine. Sett bort fra tallet '7' på forsiden er det ingenting uvanlig med det.\n" \
+                "Du tar tak i håndtaket og røsker til, men skapdøren beveger seg ikke.")
+                status["tall2"] = True
+            elif obj in ["hylle", "hyller"]:
+                while True:
+                    svar = input("Du undersøker hyllen på østveggen litt nærmere, og merker en underlig lukt fra dem. Ved nærmere undersøkelse ser du en dør bak hyllen. Vil du forsøke å flytte på den? \n> ").strip().lower()
+                    if svar == "ja":
+                        print("Du dytter så hardt du kan i siden av hyllen, som etterhvert begynner å skli til siden. Bak finner du en åpenbart hjemmesnekret dør.")
+                        status["åpen_hylle"] = True
+                        engine.rom5_utforsk_tekst = (
+                            "Du finner deg omringet av høye stabler av kasser og esker. "
+                            "To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. "
+                            "Dører leder sør og øst."
+                        )
+                        engine.utforsk_tekster["rom5"] = engine.rom5_utforsk_tekst
+                        break
+                    elif svar == "nei":
+                        rom = "rom5"
+                        restart = False
+                        return rom, restart, status, besøkt
+                    else:
+                        print(engine.ugyldig)
 
-# Funksjon for hylle i rom5
-def rom5_hylle(status):
-    while True:
-        svar = input("Du undersøker hyllen på østveggen litt nærmere, og merker en underlig lukt fra dem. Ved nærmere undersøkelse ser du en dør bak hyllen. Vil du forsøke å flytte på den? ").strip().lower()
-        if svar == "ja":
-            print("Du dytter så hardt du kan i siden av hyllen, som etterhvert begynner å skli til siden. Bak finner du en åpenbart hjemmesnekret dør.")
-            status["åpen_hylle"] = True
-            engine.rom5_utforsk_tekst = ("Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. Dører leder sør og øst."
-            )
-            return status
-        elif svar == "nei":
-            return False, "rom6" 
         else:
             print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
 
 # Funksjon for rom6
 def rom6(rom, restart, status, besøkt):
@@ -533,6 +534,12 @@ def rom8_ventil(restart, status):
                 "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
                 "På østveggen er det en stor åpning."
                 )
+                engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
+                "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
+                "Der er en åpning på østveggen."
+                )
+                engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
+                engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
                 return False, "rom8"
             elif svar == "nei":
                 return False, "rom8"

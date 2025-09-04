@@ -2,10 +2,10 @@
 rom1=True
 rom2=True
 rom3=True
-rom4=False
+rom4=True
 gang1=True
-rom5=False
-rom6=False
+rom5=True
+rom6=True
 rom7=False
 rom8=False
 rom9=False
@@ -13,7 +13,7 @@ rom9=False
 har_hammer=False
 rom2_skap=False
 tall1=False
-tall2=False
+tall2=True
 tall3=False
 åpen_ventil=False
 bøtte=False
@@ -26,4 +26,4 @@ falsk_nøkkel=False
 glødende_sopp=False
 kart=False
 #rom
-gang1
+rom3

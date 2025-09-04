@@ -145,7 +145,7 @@ rom5_utforsk_tekst = (
     "Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. En sliten hylle står lent mot østveggen. En dør leder sør."
 )
 rom6_utforsk_tekst = (
-    "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskamaskiner stablet opp langs den ene veggen.\n" \
+    "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskmaskiner stablet opp langs den ene veggen.\n" \
     "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n" \
     "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
 )
@@ -193,9 +193,9 @@ utforsk_tekster = {
 # Funksjon for beskrivelse av rom
 def rombeskrivelse(romnavn, inngang, utforsk, besøkt):
     if not besøkt[romnavn]:
-        print(inngang)       # Printes kun første gang
+        print(inngang) 
         besøkt[romnavn] = True
-    print(utforsk)            # Printes hver gang spilleren går inn
+    print(utforsk)
     return besøkt
 
 # Dict med oversikt over besøkte rom
@@ -266,7 +266,7 @@ gyldige_valg_i_rom = {
     "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom4": ["øst", "vest", "trapp", "dør", "skrivebord", "hengelås", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
     "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom5": ["sør", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
+    "rom5": ["sør", "øst", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
     "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"],
