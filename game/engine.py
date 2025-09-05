@@ -1,86 +1,41 @@
 # Inneholder alt av hjelpefunksjoner.
 
 import os
+import kartdata as kart
+import json
 
-# Variabel som definerer filstien
-lagret_spill = os.path.join(os.path.dirname(__file__), "savegame.txt")
+# =========================
+# Globale variabler og stier
+# =========================
 
-# Definerer variabler som blir brukt flere ganger
+# Filsti for lagring av spill
+lagret_spill = os.path.join(os.path.dirname(__file__), "savegame.json")
+
+# Nåværende rom
+rom = "rom1"
+
+# Restart-variabel
+restart = False
+
+# Feilmeldinger og prompts
 ugyldig = "Ugyldig svar, prøv igjen. "
 omstart = "Vil du spille igjen? (ja/nei) "
 tap = "Kjellerbeistet tok deg, og omverdenen hører aldri fra deg igjen."
 spiller_prompt = "Hva vil du gjøre? "
-hjelp = "Spillet godkjenner bare kommandoer med to ord, som må starte med 'gå', 'se', 'ta', eller 'bruk' – hold det enkelt!\nFor å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\nOm du har glemt hvor du er, kan du skrive 'utforsk' for en påminnelse, eller 'tallkode' for en påminnelse om koden! Du kan også skrive 'lagre' for å lagre fremgangen din."
+hjelp = (
+    "Spillet godkjenner bare enkle kommandoer som må starte med 'gå', 'se' eller 'ta'. Du kan også bruke noe i inventaret ditt ved å skrive 'bruk gjenstand objekt'\n"
+    "For å bevege deg fra rom til rom kan du bruke himmelretningene (nord, sør, sørvest etc.).\n"
+    "Om du har glemt hvor du er, kan du skrive 'utforsk' for å se rommet igjen, eller 'tallkode' for en påminnelse om koden! "
+    "Om du har funnet det, kan du også skrive 'kart' for en oversikt over kjelleren. Du kan også skrive 'lagre' for å lagre fremgangen din."
+)
 ingen_vei = "Det er ingen vei i den retningen."
 not_objekt = "Du har ikke det i inventaret."
 
-# Variabel for rommet man befinner seg i. Begynner på "rom1" og endres avhengig av brukers valg.
-rom = "rom1"
+# =========================
+# Romtekster
+# =========================
 
-# Definerer variabelen "restart" som False
-restart = False
-
-# Lagre spillstatus
-def lagre_spill(besøkt, status, rom):
-    with open(lagret_spill, "w", encoding="utf-8") as fil:
-        fil.write("#besøkt\n")
-        for key, value in besøkt.items():
-            fil.write(f"{key}={value}\n")
-        fil.write("#status\n")
-        for key, value in status.items():
-            fil.write(f"{key}={value}\n")
-        fil.write("#inventar\n")
-        for key, value in inventar.items():
-            fil.write(f"{key}={value}\n")
-        fil.write("#rom\n")
-        fil.write(f"{rom}")
-    print("Spillet ditt er lagret!")
-
-# Laste inn spillstatus
-def last_inn_spill():
-    global besøkt, status, rom 
-    if not os.path.exists(lagret_spill):
-        print("Finner ikke et lagret spill, starter et nytt!")
-        return besøkt, status, rom
-    with open(lagret_spill, "r", encoding="utf-8") as fil:
-        seksjon = None
-        for linje in fil:
-            linje = linje.strip()
-            if not linje or linje.startswith("#"):  # Skipper tomme linjer
-                if linje == "#besøkt":
-                    seksjon = "besøkt"
-                elif linje == "#status":
-                    seksjon = "status"
-                elif linje == "#inventar":
-                    seksjon = "inventar"
-                elif linje == "#rom":
-                    seksjon = "rom"
-                continue
-
-            if seksjon == "besøkt":
-                key, value = linje.split("=")
-                besøkt[key] = value == "True"
-            elif seksjon == "status":
-                key, value = linje.split("=")
-                status[key] = value == "True"
-            elif seksjon == "inventar":
-                key, value = linje.split("=")
-                inventar[key] = value == "True"
-            elif seksjon == "rom":
-                rom = linje
-
-    print("Velkommen tilbake!")
-    return besøkt, status, rom
-
-# Funksjon for å sjekke gyldige valg
-def sjekk_gyldig_valg(prompt, gyldige_valg, ugyldig):
-    while True:
-        valg = input(prompt).strip().lower()
-        if valg in gyldige_valg:
-            return valg
-        print(ugyldig)
-
-# Variabler som kun brukes én gang i gjeldende rom, men ikke skal inkluderes i "utforsk"-kommando
+# Tekst som vises når man går inn i rommet første gang
 rom1_inngang_tekst = ("")
 rom2_inngang_tekst = (
     "Idet du går inn i det neste rommet smeller døren igjen bak deg.\n"
@@ -119,10 +74,10 @@ rom11_inngang_tekst = (
     "Du åpner døren og blir møtt av et bekmørkt rom. Lyset fra fyrrommet lyser ikke opp mer enn en meter inn."
 )
 
-# Variabler som printes ved bruk av "utforsk"-kommandoen
-rom1_utforsk_tekst = ("Du befinner deg i et mørkt rom med et lite, skittent vindu like under taket til vest med en stige under. Til øst er det en dør."
+# Tekst som vises ved "utforsk"-kommando
+rom1_utforsk_tekst = (
+    "Du befinner deg i et mørkt rom med et lite, skittent vindu like under taket til vest med en stige under. Til øst er det en dør."
 )
-
 rom2_utforsk_tekst = (
     "En lyspære i taket gjør sitt beste for å lyse opp det mørke rommet, uten særlig hell.\n"
     "Du ser et skap i et hjørne, en arbeidsbenk, og dører til nord og øst."
@@ -132,49 +87,49 @@ rom3_utforsk_tekst = (
     "Der er dører til sør og nord, og en åpning mot vest."
 )
 rom4_utforsk_tekst = (
-    "I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
+    "I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n"
     "Under trappen står et gammelt skrivebord med en stol. På den ene veggen ser du en stor ventil.\n"
     "Der er en åpning på østveggen."
 )
 gang1_utforsk_tekst = (
-    "Du står i en lang gang. Foran deg ser du to dører, en til nordvest og en til nordøst.\n" \
-    "Gangen strekker seg fra vest til øst, og når du ser deg rundt ser du også dører til sørvest og sørøst.\n" \
+    "Du står i en lang gang. Foran deg ser du to dører, en til nordvest og en til nordøst.\n"
+    "Gangen strekker seg fra vest til øst, og når du ser deg rundt ser du også dører til sørvest og sørøst.\n"
     "Gangen er opplyst av spottere, og fremstår ellers som helt bar."
 )
 rom5_utforsk_tekst = (
     "Du finner deg omringet av høye stabler av kasser og esker. To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. En sliten hylle står lent mot østveggen. En dør leder sør."
 )
 rom6_utforsk_tekst = (
-    "Du står i noe som ligner på en vaskekjeller. Det står to oppvaskmaskiner stablet opp langs den ene veggen.\n" \
-    "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n" \
+    "Du står i noe som ligner på en vaskekjeller. Det står to vaskemaskiner stablet opp langs den ene veggen.\n"
+    "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n"
     "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
 )
 rom7_utforsk_tekst = (
-    "Rommet minner om en vinkjeller for en tenåringsgutt. Langs veggene ligger store plastikksekker fylt med forskjellige tomme bokser med energidrikker.\n" \
-    "Du ser noen vinskap fylt med Red Bull og monster av forskjellige typer, og noe som ser ut som en fermenteringsbeholder som det står 'Monstervin' på.\n" \
+    "Rommet minner om en vinkjeller for en tenåringsgutt. Langs veggene ligger store plastikksekker fylt med forskjellige tomme bokser med energidrikker.\n"
+    "Du ser noen vinskap fylt med Red Bull og monster av forskjellige typer, og noe som ser ut som en fermenteringsbeholder som det står 'Monstervin' på.\n"
     "På den ene veggen henger en stor oppslagstavle."
 )
 rom8_utforsk_tekst = (
-    "Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
-    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+    "Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n"
+    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n"
     "På østveggen er det en stor ventil."
 )
 rom9_utforsk_tekst = (
-    "Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
-    "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne står en gammel bøtte med noe mørkt og flytende oppi.\n" \
+    "Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n"
+    "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne står en gammel bøtte med noe mørkt og flytende oppi.\n"
     "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
 )
 rom10_utforsk_tekst = (
-    "Rommet kan bare beskrives som et slags gammelt arkivrom. Stabler av gamle aviser, magasiner og blader og hyller med bøker over hele rommet.\n" \
-    "Midt i rommet står en pult med en gammel pizzaeske, en haug med avisutklipp og en slags manual på.\n" \
+    "Rommet kan bare beskrives som et slags gammelt arkivrom. Stabler av gamle aviser, magasiner og blader og hyller med bøker over hele rommet.\n"
+    "Midt i rommet står en pult med en gammel pizzaeske, en haug med avisutklipp og en slags manual på.\n"
     "Du får inntrykk av at rommet ikke har hatt besøkende på lang tid."
 )
 rom11_utforsk_tekst = (
-    "Det mørke rommet er relativt tomt. Et tykt lag støv ligger på gulvet, avbrutt kun av fotspor som leder fem og tilbake mellom døren og en luke i gulvet.\n" \
+    "Det mørke rommet er relativt tomt. Et tykt lag støv ligger på gulvet, avbrutt kun av fotspor som leder fem og tilbake mellom døren og en luke i gulvet.\n"
     "Luken, som ser relativt solid ut, har et messingskilt på seg."
 )
 
-# Dict som kobler rom til utforsk tekstene:
+# Dict som kobler rom til utforsk-tekst
 utforsk_tekster = {
     "rom1": rom1_utforsk_tekst,
     "rom2": rom2_utforsk_tekst,
@@ -190,15 +145,11 @@ utforsk_tekster = {
     "rom11": rom11_utforsk_tekst,
 }
 
-# Funksjon for beskrivelse av rom
-def rombeskrivelse(romnavn, inngang, utforsk, besøkt):
-    if not besøkt[romnavn]:
-        print(inngang) 
-        besøkt[romnavn] = True
-    print(utforsk)
-    return besøkt
+# =========================
+# Spill-tilstand
+# =========================
 
-# Dict med oversikt over besøkte rom
+# Oversikt over besøkte rom
 besøkt = {
     "rom1": False,
     "rom2": False,
@@ -209,10 +160,12 @@ besøkt = {
     "rom6": False,
     "rom7": False,
     "rom8": False,
-    "rom9": False
+    "rom9": False,
+    "rom10": False,
+    "rom11": False,
 }
 
-# Dict for interagerbare objekter
+# Interagerbare objekter
 status = {
     "har_hammer": False,
     "rom2_skap": False,
@@ -222,10 +175,11 @@ status = {
     "åpen_ventil": False,
     "bøtte": False,
     "åpen_hylle": False,
-    "hengelås": False
+    "hengelås": False,
+    "helse": 3
 }
 
-# Dict for gjenstander som går i inventaret
+# Inventar
 inventar = {
     "brekkjern": False,
     "har_nøkkel": False,
@@ -234,14 +188,78 @@ inventar = {
     "kart": False
 }
 
-# Funksjon som sjekker om det spiller forsøker å bruke er en key i inventar-dicten og om verdien er truthy
+# Gyldige valg i hvert rom
+gyldige_valg_i_rom = {
+    "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom2": ["nord", "skap", "arbeidsbenk", "hammer", "øst", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom4": ["øst", "vest", "trapp", "dør", "skrivebord", "hengelås", "ventil", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom5": ["sør", "øst", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom9": ["sør", "sopp", "glødende sopp", "bøtte", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom10": ["vest", "aviser", "magasiner", "pult", "pizzaeske", "manual", "avisutklipp", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"]
+}
+
+# =========================
+# Funksjoner
+# =========================
+
+# Lagre spillstatus
+def lagre_spill(besøkt, status, rom):
+    data = {
+        "besøkt": besøkt,
+        "status": status,
+        "inventar": inventar,
+        "rom": rom
+    }
+    with open(lagret_spill, "w", encoding="utf-8") as fil:
+        json.dump(data, fil, ensure_ascii=False, indent=4)
+    print("Spillet ditt er lagret!")
+
+# Laste inn spillstatus
+def last_inn_spill():
+    global besøkt, status, rom
+    if not os.path.exists(lagret_spill):
+        print("Finner ikke et lagret spill, starter et nytt!")
+        return besøkt, status, rom
+
+    with open(lagret_spill, "r", encoding="utf-8") as fil:
+        data = json.load(fil)
+        besøkt = data.get("besøkt", besøkt)
+        status = data.get("status", status)
+        rom = data.get("rom", rom)
+        inventar.update(data.get("inventar", inventar))  # Oppdaterer eksisterende inventar
+
+    print("Velkommen tilbake!")
+    return besøkt, status, rom
+
+# Funksjon for å sjekke gyldige valg
+def sjekk_gyldig_valg(prompt, gyldige_valg, ugyldig):
+    while True:
+        valg = input(prompt).strip().lower()
+        if valg in gyldige_valg:
+            return valg
+        print(ugyldig)
+
+# Funksjon for beskrivelse av rom
+def rombeskrivelse(romnavn, inngang, utforsk, besøkt):
+    if not besøkt[romnavn]:
+        print(inngang) 
+        besøkt[romnavn] = True
+    print(utforsk)
+    return besøkt
+
+# Funksjon som sjekker om spiller har en gjenstand
 def har_gjenstand(obj):
     return obj in inventar and inventar[obj]
 
-# Feilmelding som printes om 
+# Feilmelding ved bruk av feil gjenstand
 def bruk_feilmelding(obj):
     return f"Du prøver å bruke {obj}, men det fungerer ikke her."
-
 
 # Funksjon som lister opp tallene spilleren har funnet
 def tallkode_funnet(status):
@@ -258,28 +276,28 @@ def tallkode_funnet(status):
     else:
         print("Du har ikke funnet noen tall enda!")
 
+# Funksjon som endrer antall helsepoeng
+def endre_helse(endring: int):
+    global status, rom
+    status["helse"] += endring
 
-# Dict for gyldige valg i hvert rom
-gyldige_valg_i_rom = {
-    "rom1": ["vindu", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom2": ["nord", "skap", "arbeidsbenk", "hammer", "øst", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom3": ["sør", "vest", "nord", "bokser", "malingsspann", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom4": ["øst", "vest", "trapp", "dør", "skrivebord", "hengelås", "ventil", "utforsk", "hjelp", "tallkode", "lagre"],
-    "gang1": ["sør", "nordøst", "nordvest", "sørøst", "sørvest", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom5": ["sør", "øst", "esker", "kasser", "hyller", "hylle", "reoler", "skap", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom6": ["sør", "nord", "vaskemaskiner", "vaskemaskin", "hyller", "rør", "hjul", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom7": ["nord", "vinskap", "plastsekker", "sekker", "oppslagstavle", "fermenteringsbeholder", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom9": ["sør", "sopp", "glødende sopp", "bøtte", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom10": ["vest", "aviser", "magasiner", "pult", "utforsk", "hjelp", "tallkode", "lagre"],
-    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "utforsk", "hjelp", "tallkode", "lagre"]
-}
+    if status["helse"] <= 0:
+        # Spilleren har mistet all helse
+        tapmelding = "Du har mistet alle helsepoengene dine!"
+        restart, rom = tap_restart(tapmelding)
+        if restart:
+            # Nullstill helse og besøkt/inventar
+            status["helse"] = 3
+            for key in besøkt:
+                besøkt[key] = False
+            for key in inventar:
+                inventar[key] = False
 
 # Funksjon som nullstiller besøkte rom
 def nullstill_rom(romnavn, besøkt):
     besøkt[romnavn] = False
 
-# Funksjon for å håndtere hjelp, utforsk, tallkode og lagre
+# Funksjon for å håndtere hjelp, utforsk, tallkode, lagre, kart og helse
 def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     if valg == "hjelp":
         print(hjelp_tekst)
@@ -289,6 +307,13 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
         tallkode_funnet(status)
     elif valg == "lagre":
         lagre_spill(besøkt, status, rom)
+    elif valg == "kart":
+        if not inventar["kart"]:
+            print(ugyldig)
+        else:
+            kart.vis_kart()
+    elif valg == "helse":
+        print(status["helse"])
 
 # Parser for to- og tre-ords kommandoer
 def parse_kommando():
@@ -296,16 +321,16 @@ def parse_kommando():
         kommando_input = input("> ").strip().lower()
         kommando = kommando_input.split()
 
-        # Dersom input er kun ett ord
+        # Én-ords kommando
         if len(kommando) == 1:
             ord1 = kommando[0]
-            if ord1 in ["hjelp", "utforsk", "tallkode", "lagre"]:
+            if ord1 in ["hjelp", "utforsk", "tallkode", "lagre", "kart"]:
                 hjelp_og_utforsk(ord1, hjelp, utforsk_tekster[rom], status)
             else:
                 print(ugyldig)
             continue
 
-        # Dersom input er to ord
+        # To-ords kommando
         elif len(kommando) == 2:
             verb, obj = kommando
 
@@ -313,23 +338,20 @@ def parse_kommando():
                 print(f"Kjenner ikke kommandoen {verb}.")
                 continue
 
-            # Om spiller "bruker" en gjenstand uten å skrive inn mål
             if verb == "bruk" and obj in inventar and inventar[obj]:
                 print(f"Hva vil du bruke {obj} på?")
                 mål = input("> ").strip().lower()
-
                 if mål not in gyldige_valg_i_rom[rom]:
                     print(f"Jeg ser ingen {mål} her.")
                     continue
                 return verb, (obj, mål)
 
-            # Vanlige verb-objekt kommandoer
             if obj not in gyldige_valg_i_rom[rom]:
                 print(f"Jeg forstår ikke hva du mener med {obj}.")
                 continue
             return verb, obj
 
-        # Dersom input er tre ord
+        # Tre-ords kommando
         elif len(kommando) == 3:
             verb, obj1, obj2 = kommando
             if verb == "bruk":
@@ -344,10 +366,9 @@ def parse_kommando():
                 print(ugyldig)
                 continue
 
-        # Dersom input er ugyldig
         else:
             print(ugyldig)
-    
+
 # Funksjon for når spilleren taper spillet
 def tap_restart(tapmelding):
     print(tapmelding)

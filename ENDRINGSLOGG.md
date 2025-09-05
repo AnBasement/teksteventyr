@@ -6,6 +6,27 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.2] - 2025-09-05
+### Lagt til
+- Kommandoen `kart` viser en ASCII-versjon av rommene spilleren så langt har oppdaget.
+    - All kode relatert til kartfunksjonene er i kartdata.py
+- Spillertilstand.
+    - Spilleren har nå helsepoeng som starter på 3. Dette kan gå ned og opp avhengig av spillerens handlinger. Om helsen når 0 dør spilleren og spillet må startes på nytt.
+
+### Endret
+- Omorganisert engine.py, variabler og funksjoner er nå gruppert etter hva de gjør.
+- Oppdaterer hjelp-kommando.
+- Spillet lagres nå til JSON istedenfor en tekstfil.
+
+### Fikset
+- Legger til rom10 og 11 i `besøkt`-dicten.
+- Fjerner unødvendige calls til hjelp_og_utforsk() i rooms.py som nå håndteres av parse_kommando()
+- Skrivefeil: "Oppvaskmaskiner" -> "vaskemaskiner"
+- Legger til `"pizzaeske", "manual", "avisutklipp"`som gyldige valg i rom10.
+- Fikset en sjekk av bool-verdi for kart i status til bool-verdi for kart i inventar.
+
+---
+
 ## [1.3.1] - 2025-09-04
 ### Endret
 - Går bort fra tidligere kommandoer på ett ord.
