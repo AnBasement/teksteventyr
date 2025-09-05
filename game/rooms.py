@@ -9,11 +9,7 @@ def rom1(rom, restart, besøkt):
     while True: 
         verb, obj = engine.parse_kommando()
 
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom1_utforsk_tekst, engine.status)
-            continue
-
-        elif verb == "gå":
+        if verb == "gå":
             if obj == "øst":
                 rom = "rom2"
                 break
@@ -25,10 +21,11 @@ def rom1(rom, restart, besøkt):
             if obj == "vindu":
                 valg = input("Stigen under vinduet ser solid ut. Vil du forsøke å klatre? (ja/nei) ").strip().lower()
                 if valg == "ja":
-                    restart, rom = engine.tap_restart(
+                    engine.endre_helse(-1)
+                    print(
                         "Du klatrer stigen opp mot vinduet. "
                         "Idet du når toppen, knekker den sammen under deg. "
-                        "Du faller på nakken og alt går umiddelbart i svart."
+                        f"Du skader deg når du faller i bakken. Du har nå {engine.status["helse"]} helsepoeng igjen.\n"
                     )
                     break
                 elif valg == "nei":
@@ -52,10 +49,6 @@ def rom2(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom2_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "nord":
@@ -112,8 +105,13 @@ def rom2_ost(restart):
     while True:
         svar = input("Etterhvert som du nærmer deg døren på østveggen hører du bevegelse og noe som høres ut som grynting på andre siden av døren. Vil du åpne den? (ja/nei) ").lower().strip()
         if svar == "ja":
-            restart, rom = engine.tap_restart(engine.tap)
-            return restart, rom
+            engine.endre_helse(-1)
+            print(
+                "Døren knirker når du åpner den, og du hører umiddelbart romstering innenfor. "
+                "Plutselig kommer en lang arm ut av døren, som klorer etter deg. Du smeller døren igjen på armen, som trekker seg tilbake og lar deg lukke døren. "
+                f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']} helse."
+            )
+            break
         elif svar == "nei":
             return False, "rom2"
         else:
@@ -125,10 +123,6 @@ def rom3(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom3_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "sør":
@@ -200,12 +194,8 @@ def rom4(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom4_utforsk_tekst, status)
-            continue
         
-        elif verb == "gå":
+        if verb == "gå":
             if obj == "vest":
                 if status["åpen_ventil"]:
                     rom = "rom8"
@@ -264,10 +254,14 @@ def rom4(rom, restart, status, besøkt):
             item, target = obj
             if item == "nøkkel" and target == "dør":
                 if engine.inventar["falsk_nøkkel"]:
-                    restart, rom = engine.tap_restart("Med litt makt klarer du å presse nøkkelen du fant inn i nøkkelhullet.\n"
-                    "Du rister litt i nøkkelen i et forsøk på å vri den rundt, men nøkkelen knekker. Plutselig uler en alarm gjennom kjelleren.\n"
-                    "Du hører en rytmisk dundring som blir høyere, og et gutturalt rop. Du rekker knapt å snu deg for å se inn i et fettete, kvisete ansikt før alt går i sort.")
-                    return rom, restart, status, besøkt
+                    engine.endre_helse(-1)
+                    print(
+                    "Med litt makt klarer du å presse nøkkelen du fant inn i nøkkelhullet.\n"
+                    "Du rister litt i nøkkelen i et forsøk på å vri den rundt, men nøkkelen knekker. Ut fra veggen til høyre spretter det ut en baseballkølle som treffer deg i magen.\n"
+                    "Du ramler ned trappen og slår deg grundig på vei ned."
+                    f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']} helse."
+                    )
+                    break
                 elif engine.inventar["har_nøkkel"]:
                     print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
                     "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
@@ -291,10 +285,6 @@ def gang1(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom2_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "sør":
@@ -325,10 +315,6 @@ def rom5(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom5_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "sør":
@@ -385,17 +371,14 @@ def rom6(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom6_utforsk_tekst, status)
-            continue
         
-        elif verb == "gå":
+        if verb == "gå":
             if obj == "sør":
                 rom = "gang1"
                 break
             elif obj == "nord":
                 rom = "rom9"
+                break
             else:
                 print(engine.ingen_vei)
 
@@ -429,12 +412,8 @@ def rom7(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom7_utforsk_tekst, status)
-            continue
         
-        elif verb == "gå":
+        if verb == "gå":
             if obj == "nord":
                 rom = "gang1"
                 break
@@ -471,10 +450,6 @@ def rom8(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom8_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "nord":
@@ -556,12 +531,8 @@ def rom9(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom9_utforsk_tekst, status)
-            continue
         
-        elif verb == "gå":
+        if verb == "gå":
             if obj == "sør":
                 rom = "rom6"
                 break
@@ -582,14 +553,20 @@ def rom9(rom, restart, status, besøkt):
                 status["glødende_sopp"] = True
             elif obj == "bøtte":
                 if not status["bøtte"]:
-                    print("Du nærmer deg bøtten og kjenner en illeluktende dunts som gjør det litt vanskelig å puste. Idet du forsøker å plukke den opp faller bunnen ut,\n" \
-                    "og innholdet flyter utover gulvet.")
-                    status["bøtte"] = True
-                    engine.rom9_utforsk_tekst = ("Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
-                    "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne er det en stor pytt med mørk gugge.\n" \
-                    "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
-                    )
-                    engine.utforsk_tekster["rom9"] = engine.rom9_utforsk_tekst
+                    svar = input("Du nærmer deg bøtten og kjenner en illeluktende dunts som gjør det litt vanskelig å puste. Plutselig virker guggen litt innbydende. Vil du smake? (ja/nei) " )
+                    if svar == "ja":
+                        engine.endre_helse(+1)
+                        print("Du holder deg for nesen og tar forsiktig en slurk. Guggen er overraskende søt, og du får en god, varm følelse i magen.\n" \
+                        "Når du setter bøtten ned igjen faller bunnen ut, og guggen renner utover gulvet.\n" \
+                        f"Du får 1 helsepoeng, og har nå {engine.status['helse']}.")
+                        status["bøtte"] = True
+                        engine.rom9_utforsk_tekst = ("Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
+                        "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne er det en stor pytt med mørk gugge.\n" \
+                        "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
+                        )
+                        engine.utforsk_tekster["rom9"] = engine.rom9_utforsk_tekst
+                    elif svar == "nei":
+                        print("Du velger å ikke ta sjansen, og lar bøtten stå i fred.")
                 else:
                     print("Du ser ikke poenget i å plukke opp en bunnløs bøtte.")
 
@@ -604,10 +581,6 @@ def rom10(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom10_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "vest":
@@ -624,9 +597,9 @@ def rom10(rom, restart, status, besøkt):
             elif obj == "pult":
                 print("På pulten ligger det en gammel pizzaeske, en manual og en haug med avisutklipp. ")
             elif obj == "pizzaeske":
-                if not status["kart"]:
+                if not engine.inventar["kart"]:
                     print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
-                    status["kart"] = True
+                    engine.inventar["kart"] = True
                 else:
                     print("En pizzaeske med et hull hvor det tidligere var et kart.")
             elif obj == "manual":
@@ -647,10 +620,6 @@ def rom11(rom, restart, status, besøkt):
 
     while True:  
         verb, obj = engine.parse_kommando()
-
-        if verb in ["hjelp", "utforsk", "tallkode", "lagre"]:
-            engine.hjelp_og_utforsk(verb, engine.hjelp, engine.rom11_utforsk_tekst, status)
-            continue
         
         if verb == "gå":
             if obj == "nord":

@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.3.1  
+**Versjon:** 1.3.2  
 **Lisens:** GNU GPLv3
 
 ---
@@ -43,9 +43,8 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 
 ### Uke 8
 - Refaktorer eksisterende filer.
-- Legg til fire rom.
 - Legg til muligheten for et "kart".
-- Implementer helse, inventar og poeng.
+- Implementer helse og inventar.
 
 ### Videre
 Usikker på hvor veien går videre, en kjeller kan bare ha så mange rom, men det er jo ikke helt uhørt å ha to etasjer under bakken, eller?
