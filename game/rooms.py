@@ -30,16 +30,9 @@ def rom1(rom, restart, besøkt):
                     break
                 elif valg == "nei":
                     break
+
                 else:
                     print(engine.ugyldig)
-
-        elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
-            if item == "brekkjern" and target == "vindu":
-                print("Du prøver å bruke brekkjernet på vinduet, men det sitter for hardt.")
-
-            else:
-                print(f"Kan ikke bruke {item} på {target}, men det fungerer ikke her.")
 
     return rom, restart, besøkt
 
@@ -79,6 +72,7 @@ def rom2(rom, restart, status, besøkt):
             if obj == "hammer" and not status["har_hammer"]:
                 print("Idet du plukker opp hammeren, smuldrer treskaftet opp...")
                 status["har_hammer"] = True
+                status["poeng"] += 10
             else:
                 print(engine.ugyldig)
 
@@ -143,6 +137,7 @@ def rom3(rom, restart, status, besøkt):
             elif obj == "bokser":
                 print("En haug med det som ser ut til å en gang ha vært pappesker, alle merket med tallet '4', men er nå en haug med forråtnende papp.")
                 status["tall1"] = True
+                status["poeng"] += 25
             else:
                 print(engine.ugyldig)
 
@@ -160,6 +155,7 @@ def rom3(rom, restart, status, besøkt):
                         "Inni finner du en gammeldags nøkkel!"
                     )
                     engine.inventar["har_nøkkel"] = True
+                    status["poeng"] += 100
                 else:
                     print("Malingsspannene er tomme nå.")
             else:
@@ -216,7 +212,7 @@ def rom4(rom, restart, status, besøkt):
                 if not status["åpen_ventil"]:
                     print("En stor ventil er plassert midt på vestveggen. Det kommer varm luft fra den andre siden.")
                 else:
-                    print(engine.ugyldig)
+                    print("Ventilen står lent mot veggen ved siden av den nye åpningen i veggen.")
             elif obj == "trapp":
                 print("En gammel, morken trapp. Du ser en dør i toppen av trappen.")
             elif obj == "dør":
@@ -246,6 +242,7 @@ def rom4(rom, restart, status, besøkt):
                         print("Med riktig kode får du av hengelåsen. Oppi skuffen ligger et brekkjern, som du plukker opp.")
                         engine.inventar["brekkjern"] = True
                         engine.status["hengelås"] = True
+                        engine.status["poeng"] += 250
                         break
                     else:
                         print("Feil kode. Prøv igjen.")
@@ -253,7 +250,21 @@ def rom4(rom, restart, status, besøkt):
         elif verb == "bruk" and isinstance(obj, tuple):
             item, target = obj
             if item == "nøkkel" and target == "dør":
-                if engine.inventar["falsk_nøkkel"]:
+                if engine.inventar["har_nøkkel"]:
+                    print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
+                    "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
+                    "Gratulerer! Du har unngått Kjellerbeistet og rømt fra kjelleren!")
+                    engine.status["poeng"] += 1000
+                    print(f"Du fullførte spillet med {engine.status["poeng"]} poeng!")
+                    while True:
+                        valg_restart = input(engine.omstart).strip().lower()
+                        if valg_restart == "ja":
+                            return True, "rom1", status, besøkt
+                        elif valg_restart == "nei":
+                            quit()
+                        else:
+                            print(engine.ugyldig)
+                elif engine.inventar["falsk_nøkkel"]:
                     engine.endre_helse(-1)
                     print(
                     "Med litt makt klarer du å presse nøkkelen du fant inn i nøkkelhullet.\n"
@@ -261,19 +272,8 @@ def rom4(rom, restart, status, besøkt):
                     "Du ramler ned trappen og slår deg grundig på vei ned."
                     f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']} helse."
                     )
-                    break
-                elif engine.inventar["har_nøkkel"]:
-                    print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
-                    "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
-                    "Gratulerer! Du har unngått Kjellerbeistet og rømt fra kjelleren!")
-                while True:
-                    valg_restart = input(engine.omstart).strip().lower()
-                    if valg_restart == "ja":
-                        return True, "rom1", status, besøkt
-                    elif valg_restart == "nei":
-                        quit()
-                    else:
-                        print(engine.ugyldig)
+                else:
+                    print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
@@ -340,12 +340,14 @@ def rom5(rom, restart, status, besøkt):
                 print("Bakerst i rommet står det et skap som minner deg om skoledagene dine. Sett bort fra tallet '7' på forsiden er det ingenting uvanlig med det.\n" \
                 "Du tar tak i håndtaket og røsker til, men skapdøren beveger seg ikke.")
                 status["tall2"] = True
+                status["poeng"] += 25
             elif obj in ["hylle", "hyller"]:
                 while True:
                     svar = input("Du undersøker hyllen på østveggen litt nærmere, og merker en underlig lukt fra dem. Ved nærmere undersøkelse ser du en dør bak hyllen. Vil du forsøke å flytte på den? \n> ").strip().lower()
                     if svar == "ja":
                         print("Du dytter så hardt du kan i siden av hyllen, som etterhvert begynner å skli til siden. Bak finner du en åpenbart hjemmesnekret dør.")
                         status["åpen_hylle"] = True
+                        status["poeng"] += 100
                         engine.rom5_utforsk_tekst = (
                             "Du finner deg omringet av høye stabler av kasser og esker. "
                             "To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. "
@@ -388,6 +390,7 @@ def rom6(rom, restart, status, besøkt):
             elif verb == "hyller":
                 print("Du ser fort over hyllene etter noe som kan hjelpe deg, men ser stort sett bare forskjellige vaskemidler av merket '2MO'.")
                 status["tall3"] = True
+                status["poeng"] += 25
             elif obj in ["rør", "hjul"]:
                 svar = input("Det største av rørene har et rødt hjul festet til seg. Du tar borti røret, og kan kjenne at det beveger seg vann gjennom det. Vil du vri på hjulet? (ja/nei) ").lower().strip()
                 if svar == "ja":
@@ -430,7 +433,7 @@ def rom7(rom, restart, status, besøkt):
             elif obj == "oppslagstavle":
                 print("Det henger et par forskjellige lapper på oppslagstavlen som ser ut til å indikere datoer på tidligere og det nåværende fermenteringsprosjektet.\n" \
                     "På en gul lapp står det '!NB! Esker, skap, såpe!'")
-                
+                engine.status["poeng"] += 10
         elif verb == "ta":
             if obj == "plastsekker":
                 print("Du plukker opp en plastsekk, som umiddelbart revner.")
@@ -479,7 +482,10 @@ def rom8(rom, restart, status, besøkt):
             elif obj == "oljekanner":
                 print("Et par oljekanner er strødd rundt rommet, noen ser eldre ut enn andre.")
             elif obj == "ventil":
-                print("En stor ventil. Du forsøker å kikke gjennom og tror du ser et annet rom på andre siden.")
+                if not status["åpen_ventil"]:
+                    print("En stor ventil. Du forsøker å kikke gjennom og tror du ser et annet rom på andre siden.")
+                else:
+                    print("Det er en stor åpning i veggen hvor ventilen var før. Selve ventilen ligger lent opp mot veggen på andre siden.")
             else:
                 print(engine.ugyldig)
 
@@ -509,6 +515,7 @@ def rom8(rom, restart, status, besøkt):
                 print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
                       "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
                 status["åpen_ventil"] = True
+                status["poeng"] += 150
                 engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
                 "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
                 "På østveggen er det en stor åpning."
@@ -551,6 +558,7 @@ def rom9(rom, restart, status, besøkt):
             if obj in ["sopp", "glødende sopp"]:
                 print("Du tar tak i en av soppene og napper til. Gratulerer, du har en glødende sopp! Kanskje best å ikke smake på...")
                 status["glødende_sopp"] = True
+                status["poeng"] += 50
             elif obj == "bøtte":
                 if not status["bøtte"]:
                     svar = input("Du nærmer deg bøtten og kjenner en illeluktende dunts som gjør det litt vanskelig å puste. Plutselig virker guggen litt innbydende. Vil du smake? (ja/nei) " )
@@ -560,6 +568,7 @@ def rom9(rom, restart, status, besøkt):
                         "Når du setter bøtten ned igjen faller bunnen ut, og guggen renner utover gulvet.\n" \
                         f"Du får 1 helsepoeng, og har nå {engine.status['helse']}.")
                         status["bøtte"] = True
+                        status["poeng"] += 200
                         engine.rom9_utforsk_tekst = ("Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
                         "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne er det en stor pytt med mørk gugge.\n" \
                         "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
@@ -600,6 +609,7 @@ def rom10(rom, restart, status, besøkt):
                 if not engine.inventar["kart"]:
                     print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
                     engine.inventar["kart"] = True
+                    engine.status["poeng"] += 500
                 else:
                     print("En pizzaeske med et hull hvor det tidligere var et kart.")
             elif obj == "manual":

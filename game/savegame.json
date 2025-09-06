@@ -1,0 +1,37 @@
+{
+    "besøkt": {
+        "rom1": true,
+        "rom2": true,
+        "rom3": false,
+        "rom4": false,
+        "gang1": false,
+        "rom5": false,
+        "rom6": false,
+        "rom7": false,
+        "rom8": false,
+        "rom9": false,
+        "rom10": false,
+        "rom11": false
+    },
+    "status": {
+        "har_hammer": true,
+        "rom2_skap": false,
+        "tall1": false,
+        "tall2": false,
+        "tall3": false,
+        "åpen_ventil": false,
+        "bøtte": false,
+        "åpen_hylle": false,
+        "hengelås": false,
+        "helse": 3,
+        "poeng": 10
+    },
+    "inventar": {
+        "brekkjern": false,
+        "har_nøkkel": false,
+        "falsk_nøkkel": false,
+        "glødende_sopp": false,
+        "kart": false
+    },
+    "rom": "rom2"
+}

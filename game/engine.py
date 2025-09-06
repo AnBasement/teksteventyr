@@ -176,7 +176,8 @@ status = {
     "bøtte": False,
     "åpen_hylle": False,
     "hengelås": False,
-    "helse": 3
+    "helse": 3,
+    "poeng": 0
 }
 
 # Inventar
