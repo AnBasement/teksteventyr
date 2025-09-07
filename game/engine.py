@@ -73,6 +73,18 @@ rom10_inngang_tekst = (
 rom11_inngang_tekst = (
     "Du åpner døren og blir møtt av et bekmørkt rom. Lyset fra fyrrommet lyser ikke opp mer enn en meter inn."
 )
+rom12_inngang_tekst = (
+    "Du åpner døren til et trangt, kaldt rom. En svak lukt av mugg og gammel mat slår mot deg."
+)
+rom13_inngang_tekst = (
+    "Den smale åpningen leder inn i et fuktig, lavt kammer. De eneste lydene du hører er den konstante dryppingen fra det fuktige taket."
+)
+kjeller2_1_inngang_tekst = (
+    "Den bratte trappen ender i en mørk, kald del av kjelleren. Veggene er grov stein, og vann drypper fra taket."
+)
+kjeller2_2_inngang_tekst = (
+    "Du går inn i et rom som ser ut som en blanding av laboratorium og torturkammer."
+)
 
 # Tekst som vises ved "utforsk"-kommando
 rom1_utforsk_tekst = (
@@ -102,31 +114,50 @@ rom5_utforsk_tekst = (
 rom6_utforsk_tekst = (
     "Du står i noe som ligner på en vaskekjeller. Det står to vaskemaskiner stablet opp langs den ene veggen.\n"
     "Den bakre veggen og taket er fullt av rør, noen med små lekkasjer og andre så rustne at det er et under de ikke lekker. På ett av rørene er det et stort rødt hjul, og du legger merke til noe som ligner på en løs paneldør ved siden.\n"
-    "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. En dør leder sør."
+    "Langs den siste veggen står en rekke hyller med forskjellige vaskemidler på. Dører leder sør og nord."
 )
 rom7_utforsk_tekst = (
     "Rommet minner om en vinkjeller for en tenåringsgutt. Langs veggene ligger store plastikksekker fylt med forskjellige tomme bokser med energidrikker.\n"
     "Du ser noen vinskap fylt med Red Bull og monster av forskjellige typer, og noe som ser ut som en fermenteringsbeholder som det står 'Monstervin' på.\n"
-    "På den ene veggen henger en stor oppslagstavle."
+    "På den ene veggen henger en stor oppslagstavle. En dør leder nord."
 )
 rom8_utforsk_tekst = (
     "Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n"
     "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n"
-    "På østveggen er det en stor ventil."
+    "På østveggen er det en stor ventil. Dører leder nord og sør."
 )
 rom9_utforsk_tekst = (
     "Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n"
     "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne står en gammel bøtte med noe mørkt og flytende oppi.\n"
-    "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
+    "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme? En dør leder sør."
 )
 rom10_utforsk_tekst = (
     "Rommet kan bare beskrives som et slags gammelt arkivrom. Stabler av gamle aviser, magasiner og blader og hyller med bøker over hele rommet.\n"
     "Midt i rommet står en pult med en gammel pizzaeske, en haug med avisutklipp og en slags manual på.\n"
-    "Du får inntrykk av at rommet ikke har hatt besøkende på lang tid."
+    "Du får inntrykk av at rommet ikke har hatt besøkende på lang tid. Dører leder vest og øst."
 )
 rom11_utforsk_tekst = (
     "Det mørke rommet er relativt tomt. Et tykt lag støv ligger på gulvet, avbrutt kun av fotspor som leder fem og tilbake mellom døren og en luke i gulvet.\n"
-    "Luken, som ser relativt solid ut, har et messingskilt på seg."
+    "Luken, som ser relativt solid ut, har et messingskilt på seg. En dør leder nord."
+)
+rom12_utforsk_tekst = (
+    "Rundt i rommet står en rekke hyller og kasser. Noen av kassene er ødelagte, og på gulvet ligger en pose med noe hvitt i. "
+    "På den ene veggen henger en jernkrok, og i et hjørne står en umerket krukke. " \
+    "Der er dører som leder vest og sør."
+)
+rom13_utforsk_tekst = (
+    "Kammeret har steinvegger som drypper vann, og gulvet er fuktig. "
+    "Rommet ser relativt tomt ut, sett bort fra en sokkel midt i rommet med et gammeldags skrin på." \
+    "Der en utgang som leder nord."
+)
+kjeller2_1_utforsk_tekst = (
+    "Du står i bunnen av stigen. I et hjørne står en gammeldags kasse malt i intrikate mønstre. "
+    "Veggene er grove og ser nesten ut til å være hogget ut manuelt, og du hører konstant sildring og drypping. "
+    "Til øst ser du en døråpning."
+)
+kjeller2_2_utforsk_tekst = (
+    "Rommet har et mørkt og trykkende preg. Nedstøvete bokhyller står langs veggene, og både gulvet og et bord er dekket i kolber i varierende stand. "
+    "På den ene veggen henger et slags verktøyskap fylt med ukjente instrumenter. Der er en dør som leder vest."
 )
 
 # Dict som kobler rom til utforsk-tekst
@@ -143,6 +174,10 @@ utforsk_tekster = {
     "rom9": rom9_utforsk_tekst,
     "rom10": rom10_utforsk_tekst,
     "rom11": rom11_utforsk_tekst,
+    "rom12": rom12_utforsk_tekst,
+    "rom13": rom13_utforsk_tekst,
+    "kjeller2_1": kjeller2_1_utforsk_tekst,
+    "kjeller2_2": kjeller2_2_utforsk_tekst,
 }
 
 # =========================
@@ -163,6 +198,10 @@ besøkt = {
     "rom9": False,
     "rom10": False,
     "rom11": False,
+    "rom12": False,
+    "rom13": False,
+    "kjeller2_1": False,
+    "kjeller2_2": False,
 }
 
 # Interagerbare objekter
@@ -176,6 +215,7 @@ status = {
     "bøtte": False,
     "åpen_hylle": False,
     "hengelås": False,
+    "luke_kode": False,
     "helse": 3,
     "poeng": 0
 }
@@ -186,7 +226,9 @@ inventar = {
     "har_nøkkel": False,
     "falsk_nøkkel": False,
     "glødende_sopp": False,
-    "kart": False
+    "kart": False,
+    "luke_nøkkel1": False,
+    "luke_nøkkel2": False,
 }
 
 # Gyldige valg i hvert rom

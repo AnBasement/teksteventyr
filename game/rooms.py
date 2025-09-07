@@ -105,7 +105,7 @@ def rom2_ost(restart):
                 "Plutselig kommer en lang arm ut av døren, som klorer etter deg. Du smeller døren igjen på armen, som trekker seg tilbake og lar deg lukke døren. "
                 f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']} helse."
             )
-            break
+            return False, "rom2"
         elif svar == "nei":
             return False, "rom2"
         else:
@@ -149,12 +149,12 @@ def rom3(rom, restart, status, besøkt):
                 continue
 
             if item == "brekkjern" and target == "malingsspann":
-                if not engine.inventar["har_nøkkel"]:
+                if not engine.inventar["luke_nøkkel1"]:
                     print(
                         "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
                         "Inni finner du en gammeldags nøkkel!"
                     )
-                    engine.inventar["har_nøkkel"] = True
+                    engine.inventar["luke_nøkkel1"] = True
                     status["poeng"] += 100
                 else:
                     print("Malingsspannene er tomme nå.")
@@ -168,13 +168,13 @@ def rom3(rom, restart, status, besøkt):
 # Funksjon for malingsspann i rom 3
 def rom3_malingsspann(status, verb):
     if verb == "se":
-        if not engine.inventar["har_nøkkel"]:
+        if not engine.inventar["luke_nøkkel1"]:
             print("En haug med gamle malingsspann.")
         else:
             print("Et sett gamle malingsspann, men de er tomme nå.")
 
     elif verb == "ta":
-        if not engine.inventar["har_nøkkel"]:
+        if not engine.inventar["luke_nøkkel1"]:
             print(
                 "Du plukker opp noen av malingsspannene, og hører noe løst inni et av dem.\n"
                 "Du forsøker å åpne det, men inntørket maling og rust har gjort det nesten umulig."
@@ -518,7 +518,7 @@ def rom8(rom, restart, status, besøkt):
                 status["poeng"] += 150
                 engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
                 "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
-                "På østveggen er det en stor åpning."
+                "På østveggen er det en stor åpning. Dører leder nord og sør."
                 )
                 engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
                 "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
@@ -595,6 +595,9 @@ def rom10(rom, restart, status, besøkt):
             if obj == "vest":
                 rom = "rom5"
                 break
+            elif obj == "øst":
+                rom = "rom12"
+                break
             else:
                 print(engine.ingen_vei)
 
@@ -634,6 +637,46 @@ def rom11(rom, restart, status, besøkt):
         if verb == "gå":
             if obj == "nord":
                 rom = "rom8"
+                break
+            else:
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj == "fotspor":
+                print("Fotsporene leder frem og tilbake mellom luken og døren, og ser relativt ferske ut sammenlignet med resten av rommet.")
+            elif obj == "luke":
+                print("Luken er låst med ikke bare én, men tre hengelåser. To trenger en nøkkel, og den tredje trenger en 4-sifret kode. Du forsøker å dra i den, uten hell.")
+            elif obj in ["skilt", "messingskilt"]:
+                print("Du tørker litt støv og rusk av messingskiltet og leser det. 'ADGANG KUN FOR ALFAMENN!!'")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "ta":
+            if obj == "fotspor":
+                print("Du forsøker å samle sammen støvet rundt fotsporet før du tar deg selv i å lure på hva du holder på med.")
+            elif obj == "luke":
+                print("Du river og sliter litt i luken uten hell.")
+            elif obj in ["skilt", "messingskilt"]:
+                print("Du prøver å pirke opp skiltet, men får ikke grep.")
+
+        else:
+            print(engine.ugyldig)
+            
+    return rom, restart, status, besøkt
+    
+# Funksjon for rom 12
+def rom12(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("rom12", engine.rom12_inngang_tekst, engine.rom12_utforsk_tekst, besøkt)
+
+    while True:  
+        verb, obj = engine.parse_kommando()
+        
+        if verb == "gå":
+            if obj == "øst":
+                rom = "rom11"
+                break
+            if obj == "sør":
+                rom = "rom13"
                 break
             else:
                 print(engine.ingen_vei)

@@ -18,7 +18,8 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - 
 
 ### Endret
-- Lagt til en `se`-beskrivelse for ventil i rom 4 og rom 8 etter `status["åpen_ventil"]` er flippet
+- Lagt til en `se`-beskrivelse for ventil i rom 4 og rom 8 etter `status["åpen_ventil"]` er flippet.
+- Oppdatert rombeskrivelse i rom6, rom8 (inkl. etter endring), rom9, rom10 og rom11 til å inkludere alle mulige utganger.
 
 ### Fikset
 - Fikset logikken slik at den ekte nøkkelen brukes først dersom spiller har både ekte og falsk nøkkel i inventar i rom 4.
