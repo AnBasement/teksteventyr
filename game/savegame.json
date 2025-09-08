@@ -1,0 +1,43 @@
+{
+    "besøkt": {
+        "rom1": true,
+        "rom2": true,
+        "rom3": true,
+        "rom4": true,
+        "gang1": true,
+        "rom5": true,
+        "rom6": true,
+        "rom7": true,
+        "rom8": true,
+        "rom9": true,
+        "rom10": true,
+        "rom11": true,
+        "rom12": true,
+        "rom13": true,
+        "kjeller2_1": true,
+        "kjeller2_2": true
+    },
+    "status": {
+        "har_hammer": true,
+        "rom2_skap": false,
+        "tall1": false,
+        "tall2": false,
+        "tall3": false,
+        "åpen_ventil": false,
+        "bøtte": false,
+        "åpen_hylle": true,
+        "hengelås": false,
+        "helse": 3,
+        "poeng": 110
+    },
+    "inventar": {
+        "brekkjern": false,
+        "har_nøkkel": false,
+        "falsk_nøkkel": false,
+        "glødende_sopp": false,
+        "kart": true,
+        "luke_nøkkel1": false,
+        "luke_nøkkel2": false
+    },
+    "rom": "kjeller2_1"
+}

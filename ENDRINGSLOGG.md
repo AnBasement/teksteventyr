@@ -6,6 +6,26 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.0] - 2025-09-##
+### Lagt til
+- Introdusert et poengsystem.
+    - Forskjellige handlinger gjennom spillet vil gi spilleren varierende antall poeng.
+    - Poengene printes kun når spilleren dør eller fullfører spillet.
+- Fire nye rom er også lagt til, rom12, rom13, kjeller2_1 og kjeller2_2.
+
+### Endret
+- Lagt til en `se`-beskrivelse for ventil i rom 4 og rom 8 etter `status["åpen_ventil"]` er flippet.
+- Oppdatert rombeskrivelse i rom6, rom8 (inkl. etter endring), rom9, rom10 og rom11 til å inkludere alle mulige utganger.
+
+### Fikset
+- Fikset logikken slik at den ekte nøkkelen brukes først dersom spiller har både ekte og falsk nøkkel i inventar i rom 4.
+- Skrivefeil: "dunts" -> "dunst"
+
+### Fjernet
+- Det var teknisk sett mulig å bruke brekkjernet på vinduet i rom1, selv om spilleren aldri kan nå rom1 med brekkjernet i inventaret. Fjernet den relevante koden.
+
+---
+
 ## [1.3.2] - 2025-09-05
 ### Lagt til
 - Kommandoen `kart` viser en ASCII-versjon av rommene spilleren så langt har oppdaget.
