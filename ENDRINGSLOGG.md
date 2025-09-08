@@ -6,7 +6,7 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.4.0] - 2025-09-##
+## [1.4.0] - 2025-09-08
 ### Lagt til
 - Introdusert et poengsystem.
     - Forskjellige handlinger gjennom spillet vil gi spilleren varierende antall poeng.
