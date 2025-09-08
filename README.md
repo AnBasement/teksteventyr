@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.4.0  
+**Versjon:** 1.4.1  
 **Lisens:** GNU GPLv3
 
 ---

@@ -6,6 +6,12 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.1] - 2025-09-08
+### Fikset
+- Funksjonen kjeller2_2() returnerte ingenting, dette er fikset.
+
+---
+
 ## [1.4.0] - 2025-09-08
 ### Lagt til
 - Introdusert et poengsystem.
