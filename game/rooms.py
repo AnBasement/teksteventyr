@@ -877,3 +877,5 @@ def kjeller2_2(rom, restart, status, besøkt):
                 print(engine.ugyldig)
         else:
             print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
