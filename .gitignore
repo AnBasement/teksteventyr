@@ -12,3 +12,6 @@ test_*.py
 # Midlertidige filer
 *.log
 *~
+
+# Lagrede spill
+/game/savegame.json

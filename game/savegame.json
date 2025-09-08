@@ -10,12 +10,12 @@
         "rom7": true,
         "rom8": true,
         "rom9": true,
-        "rom10": false,
-        "rom11": false,
-        "rom12": false,
-        "rom13": false,
-        "kjeller2_1": false,
-        "kjeller2_2": false
+        "rom10": true,
+        "rom11": true,
+        "rom12": true,
+        "rom13": true,
+        "kjeller2_1": true,
+        "kjeller2_2": true
     },
     "status": {
         "har_hammer": true,
@@ -39,5 +39,5 @@
         "luke_nøkkel1": false,
         "luke_nøkkel2": false
     },
-    "rom": "rom5"
+    "rom": "kjeller2_1"
 }

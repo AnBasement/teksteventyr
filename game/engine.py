@@ -147,17 +147,18 @@ rom12_utforsk_tekst = (
 )
 rom13_utforsk_tekst = (
     "Kammeret har steinvegger som drypper vann, og gulvet er fuktig. "
-    "Rommet ser relativt tomt ut, sett bort fra en sokkel midt i rommet med et gammeldags skrin på." \
+    "Rommet ser relativt tomt ut, sett bort fra en sokkel midt i rommet med et gammeldags skrin på. Det ser ut til at noen har risset noe inn i veggene. " \
     "Der en utgang som leder nord."
 )
 kjeller2_1_utforsk_tekst = (
-    "Du står i bunnen av stigen. I et hjørne står en gammeldags kasse malt i intrikate mønstre. "
+    "Du står i bunnen av stigen. En stige går langs den ene veggen, men ser ikke ut til å lede noe sted. "
     "Veggene er grove og ser nesten ut til å være hogget ut manuelt, og du hører konstant sildring og drypping. "
     "Til øst ser du en døråpning."
 )
 kjeller2_2_utforsk_tekst = (
-    "Rommet har et mørkt og trykkende preg. Nedstøvete bokhyller står langs veggene, og både gulvet og et bord er dekket i kolber i varierende stand. "
-    "På den ene veggen henger et slags verktøyskap fylt med ukjente instrumenter. Der er en dør som leder vest."
+    "Rommet har et trykkende preg. Nedstøvete bokhyller står langs veggene, og både gulvet og bordene er dekket med kolber i varierende stand. "
+    "På et bord står et gammelt treskrin med hengelås, tydelig tilsynelatende verdifullt. Langs den ene veggen er et verktøyskap. "
+    "En dør leder vest."
 )
 
 # Dict som kobler rom til utforsk-tekst
@@ -216,6 +217,10 @@ status = {
     "åpen_hylle": False,
     "hengelås": False,
     "luke_kode": False,
+    "åpen_luke": False,
+    "krukke": False,
+    "rom13_skrin": False,
+    "kolber": False,
     "helse": 3,
     "poeng": 0
 }
@@ -227,6 +232,8 @@ inventar = {
     "falsk_nøkkel": False,
     "glødende_sopp": False,
     "kart": False,
+    "saltpose": False,
+    "jernkrok": False,
     "luke_nøkkel1": False,
     "luke_nøkkel2": False,
 }
@@ -244,7 +251,11 @@ gyldige_valg_i_rom = {
     "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom9": ["sør", "sopp", "glødende sopp", "bøtte", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom10": ["vest", "aviser", "magasiner", "pult", "pizzaeske", "manual", "avisutklipp", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
-    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"]
+    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "nøkkel", "kode", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom12": ["øst", "sør", "hylle", "hyller", "kasse", "kasser", "filler", "stoffrester", "pose", "jernkrok", "krok", "krukke", "nøkkel", "gugge", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom13": ["nord", "skrin", "sokkel", "vegg", "vegger", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_1": ["luke", "øst", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_2": ["vest", "bokhylle", "bokhyller", "kolbe", "kolber", "skrin", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
 }
 
 # =========================

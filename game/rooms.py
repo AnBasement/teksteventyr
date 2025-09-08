@@ -561,7 +561,7 @@ def rom9(rom, restart, status, besøkt):
                 status["poeng"] += 50
             elif obj == "bøtte":
                 if not status["bøtte"]:
-                    svar = input("Du nærmer deg bøtten og kjenner en illeluktende dunts som gjør det litt vanskelig å puste. Plutselig virker guggen litt innbydende. Vil du smake? (ja/nei) " )
+                    svar = input("Du nærmer deg bøtten og kjenner en illeluktende dunst som gjør det litt vanskelig å puste. Plutselig virker guggen litt innbydende. Vil du smake? (ja/nei) " )
                     if svar == "ja":
                         engine.endre_helse(+1)
                         print("Du holder deg for nesen og tar forsiktig en slurk. Guggen er overraskende søt, og du får en god, varm følelse i magen.\n" \
@@ -638,6 +638,12 @@ def rom11(rom, restart, status, besøkt):
             if obj == "nord":
                 rom = "rom8"
                 break
+            if obj == "luke":
+                if not engine.status["åpen_luke"]:
+                    print(engine.ugyldig)
+                else:
+                    rom = "kjeller2_1"
+                    break
             else:
                 print(engine.ingen_vei)
         
@@ -658,6 +664,24 @@ def rom11(rom, restart, status, besøkt):
                 print("Du river og sliter litt i luken uten hell.")
             elif obj in ["skilt", "messingskilt"]:
                 print("Du prøver å pirke opp skiltet, men får ikke grep.")
+            
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item in ["nøkkel", "kode"] and target == "luke":
+                if engine.status["åpen_luke"]:
+                    print("Luken er allerede åpnet.")
+                elif not engine.status["luke_kode"]:
+                    print("Du mangler koden til kodelåsen.")
+                elif not engine.inventar["luke_nøkkel1"]:
+                    print("Du mangler nøkkelen til den første låsen.")
+                elif not engine.inventar["luke_nøkkel2"]:
+                    print("Du mangler nøkkelen til den andre låsen.")
+                else:
+                    print("Med de to nøklene og koden til hengelåsen får du åpnet luken.")
+                    engine.status["åpen_luke"] = True
+                    engine.status["poeng"] += 500
+            else:
+                print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
@@ -682,24 +706,174 @@ def rom12(rom, restart, status, besøkt):
                 print(engine.ingen_vei)
         
         elif verb == "se":
-            if obj == "fotspor":
-                print("Fotsporene leder frem og tilbake mellom luken og døren, og ser relativt ferske ut sammenlignet med resten av rommet.")
-            elif obj == "luke":
-                print("Luken er låst med ikke bare én, men tre hengelåser. To trenger en nøkkel, og den tredje trenger en 4-sifret kode. Du forsøker å dra i den, uten hell.")
-            elif obj in ["skilt", "messingskilt"]:
-                print("Du tørker litt støv og rusk av messingskiltet og leser det. 'ADGANG KUN FOR ALFAMENN!!'")
+            if obj in ["hylle", "hyller"]:
+                print("Hyllene er fulle av diverse hermetikk. Du merker at det er overraskende mange kanner med fersken.")
+            elif obj in ["kasse", "kasser"]:
+                print("Du kikker over kassene, og ser at en av dem er åpnet. Du ser en haug med filler og stoffrester i bunnen.")
+            elif obj in ["filler", "stoffrester"]:
+                print("Det ligger stoffrester og filler i forskjellige kasser i den ene kassen. Du romsterer litt rundt og ser en liten nøkkel i bunnen.")
+            elif obj == "pose":
+                print("Når du ser litt nærmere etter ser du at det hvite stoffet ser ut som om det enten er salt eller sukker.")
+            elif obj in ["jernkrok", "krok"]:
+                print("En gammel jernkrok som henger på veggen. Den ser litt løs ut. Vil helst ikke tenke på hva den er blitt brukt til...")
+            elif obj == "krukke":
+                print("Du nærmer deg krukken og ser oppi. En mørk gugge med en litt søt eim fyller den til randen.")
             else:
                 print(engine.ugyldig)
 
         elif verb == "ta":
-            if obj == "fotspor":
-                print("Du forsøker å samle sammen støvet rundt fotsporet før du tar deg selv i å lure på hva du holder på med.")
-            elif obj == "luke":
-                print("Du river og sliter litt i luken uten hell.")
-            elif obj in ["skilt", "messingskilt"]:
-                print("Du prøver å pirke opp skiltet, men får ikke grep.")
+            if obj == "nøkkel":
+                print("Du rekker hånden ned i stoffrestene og plukker opp nøkkelen. Det henger en liten lapp på den hvor det står 'K2'.")
+                engine.inventar["luke_nøkkel2"] = True
+                engine.status["poeng"] += 200
+            elif obj == "pose":
+                print("Du plukker opp posen og åpner den. Du tar litt av det hvite pulveret på fingen og smaker det. Salt? Jaja, kanskje det blir nyttig.")
+                engine.inventar["saltpose"] = True
+                engine.status["poeng"] += 50
+            elif obj in ["krok", "jernkrok"]:
+                print("Du røsker litt i jernkroken på veggen, som løsner lett, og henger den på beltet ditt.")
+                engine.inventar["jenrkrok"] = True
+                engine.status["poeng"] += 100
+            elif obj in ["krukke", "gugge"]:
+                if not engine.inventar["krukke"]:
+                    engine.endre_helse(-1)
+                    print("Du tar en sjanse og lener deg ned over krukken. Du smaker litt på guggen, og kjenner umiddelbart at du blir litt ør i hodet.\n" \
+                    f"Du mister 1 helsepoeng, og har nå {engine.status['helse']}.")
+                    engine.status["krukke"] = True
+                    engine.status["poeng"] -= 50
+                else:
+                    print("Tror ikke det er en god ide å teste den guggen igjen...")
+            else:
+                print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
             
     return rom, restart, status, besøkt
+
+# Funksjon for rom 13
+def rom13(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("rom13", engine.rom13_inngang_tekst, engine.rom13_utforsk_tekst, besøkt)
+
+    while True:  
+        verb, obj = engine.parse_kommando()
+        
+        if verb == "gå":
+            if obj == "nord":
+                rom = "rom12"
+                break
+            else:
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj == "skrin":
+                print("Et gammelt skrin med intrikate mønstre skåret inn i treverket.")
+            elif obj == "sokkel":
+                print("Litt merkelig å se en sokkel som kanskje ser ut som den hører hjemme i et herskapshus i en fuktig kjeller...")
+            elif obj in ["vegg", "vegger"]:
+                print("Du undersøker veggene litt, og merker deg at det ikke ser ut som en profesjonell har laget dette rommet. Du merker at de samme fire tallene er risset inn flere steder: \n" \
+                "'3142'.")
+                engine.status["luke_kode"] = True
+                engine.status["poeng"] += 150
+            else:
+                print(engine.ugyldig)
+            
+        elif verb == "ta":
+            if obj == "skrin":
+                print("Du forsøker å løfte opp skrinet, men det ser ut til å være helt boltet fast i sokkelen.")
+            else:
+                print(engine.ugyldig)
+            
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item == "brekkjern" and target == "skrin":
+                print("Du klarer å presse brekkjernet inn i en liten sprekk og drar til med all din makt. \n"
+                      "Selv etter et minutt med kaving klarer du ikke å få opp skrinet.")
+                engine.status["poeng"] += 50
+            else:
+                print(engine.ugyldig)
+        
+        else:
+            print(engine.ugyldig)
+            
+    return rom, restart, status, besøkt
+
+# Funksjon for kjeller2_1
+def kjeller2_1(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_1", engine.kjeller2_1_inngang_tekst, engine.kjeller2_1_utforsk_tekst, besøkt)
+
+    while True:  
+        verb, obj = engine.parse_kommando()
+        
+        if verb == "gå":
+            if obj == "luke":
+                rom = "rom11"
+                break
+            if obj == "øst":
+                rom = "kjeller2_2"
+                break
+            else:
+                print(engine.ingen_vei)
+        
+        elif verb == "se":
+            if obj in ["stige", "jernstige"]:
+                print("Du tusler bort til stigen og klør deg litt i hodet. En stige, festet i veggen, som ikke går noe sted? Merkelig. Den er uansett alt for glatt og fuktig til å klatre.")
+            elif obj in ["vegg", "vegger"]:
+                print("Det virker åpenbart at dette rommet har blitt hogget ut manuelt, og ikke med fokus på estetikk.")
+            else:
+                print(engine.ugyldig)
+        
+        else:
+            print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
+
+# Funksjon for kjeller2_2
+def kjeller2_2(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_2", engine.kjeller2_2_inngang_tekst, engine.kjeller2_2_utforsk_tekst, besøkt)
+
+    while True:  
+        verb, obj = engine.parse_kommando()
+        
+        if verb == "gå":
+            if obj == "vest":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj in ["bokhylle", "bokhyller"]:
+                print("Du går opp og ned langs bokhyllene og skummer over titlene. Underlig mange handler om anatomi. Det ligger også noen notatbøker her med forskjellige årstall på.")
+            elif obj in ["kolbe", "kolber"]:
+                print("De fleste kolbene er knust og nedstøvet. Noen ser ut til å ha blitt håndtert litt nyligere, noen med litt væske i bunnen.")
+            elif obj == "skrin":
+                print("Et gammelt treskrin med en hengelås på.")
+            else:
+                print(engine.ugyldig)
+        
+        elif verb == "ta":
+            if obj in ["kolbe", "kolber"]:
+                if not engine.status["kolber"]:
+                    engine.endre_helse(-1)
+                    print("Du går litt mellom de forskjellige kolbene. De fleste er knust, men du ser en på gulvet som har en slags sølvfarget væske oppi. Du bøyer deg ned og plukker den opp, men kolben knuser idet du tar på den.\n" \
+                    f"Du mister 1 helsepoeng, og har nå {engine.status['helse']}.")
+                    engine.status["kolber"] = True
+                    engine.status["poeng"] -= 50
+                else:
+                    print("Det er ikke noen andre kolber som ser interessante ut.")
+            if obj == "skrin":
+                print("Du plukker opp skrinet, som virker relativt lett. Låsen ser mye nyere ut enn selve skrinet. Når du rister på det hører du at det er noe inni.")
+
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item == "brekkjern" and target == "skrin":
+                if not engine.inventar["har_nøkkel"]:
+                    print("Du presser brekkjernet inn under hengelåsen og rykker til. Hengelåsen faller til gulvet, og lokket spretter opp. Ut faller en nøkkel, som du plukker opp.")
+                    engine.inventar["har_nøkkel"] = True
+                else:
+                    print("Tror ikke det er så mye mer brekkjernet kan gjøre med dette gamle skrinet...")
+            else:
+                print(engine.ugyldig)
+        else:
+            print(engine.ugyldig)
