@@ -3,6 +3,7 @@
 import os
 import kartdata as kart
 import json
+import random
 
 # =========================
 # Globale variabler og stier
@@ -220,6 +221,8 @@ status = {
     "åpen_luke": False,
     "krukke": False,
     "rom13_skrin": False,
+    "skrin13": 0,
+    "skrin2_2": 0,
     "kolber": False,
     "helse": 3,
     "poeng": 0
@@ -236,6 +239,12 @@ inventar = {
     "jernkrok": False,
     "luke_nøkkel1": False,
     "luke_nøkkel2": False,
+}
+
+# Vekter for sjansemekanikk
+sjanser = {
+    "rom13_vekter": [(50, 50), (75, 25), (100, 0)],
+    "kjeller2_2_vekter": [(50, 50), (75, 25), (100, 0)]
 }
 
 # Gyldige valg i hvert rom
@@ -346,6 +355,16 @@ def endre_helse(endring: int):
                 besøkt[key] = False
             for key in inventar:
                 inventar[key] = False
+
+# Funksjon for sjansemekanikk
+def sjansemekanikk(hendelse, status):
+    status[hendelse] = status.get(hendelse, 0) + 1
+    forsøk = status(hendelse)
+
+    vekter = sjanser(hendelse)
+    w = vekter[min(forsøk - 1, len(vekter) - 1)]
+
+    return random.choices(["tap", "seier"], weights = w) [0]
 
 # Funksjon som nullstiller besøkte rom
 def nullstill_rom(romnavn, besøkt):
