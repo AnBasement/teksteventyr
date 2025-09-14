@@ -223,6 +223,8 @@ status = {
     "rom13_skrin": False,
     "skrin13": 0,
     "skrin2_2": 0,
+    "ventil": 0,
+    "malingsspann": 0,
     "kolber": False,
     "helse": 3,
     "poeng": 0
@@ -244,6 +246,8 @@ inventar = {
 # Vekter for sjansemekanikk
 sjanser = {
     "rom13_vekter": [(50, 50), (75, 25), (100, 0)],
+    "malingsspann": [(50, 50), (75, 25), (100, 0)],
+    "ventil": [(50, 50), (75, 25), (100, 0)],
     "kjeller2_2_vekter": [(50, 50), (75, 25), (100, 0)]
 }
 
@@ -364,7 +368,7 @@ def sjansemekanikk(hendelse, status):
     vekter = sjanser(hendelse)
     w = vekter[min(forsøk - 1, len(vekter) - 1)]
 
-    return random.choices(["tap", "seier"], weights = w) [0]
+    return random.choices(["seier", "tap"], weights = w) [0]
 
 # Funksjon som nullstiller besøkte rom
 def nullstill_rom(romnavn, besøkt):

@@ -149,15 +149,19 @@ def rom3(rom, restart, status, besøkt):
                 continue
 
             if item == "brekkjern" and target == "malingsspann":
-                if not engine.inventar["luke_nøkkel1"]:
-                    print(
-                        "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
-                        "Inni finner du en gammeldags nøkkel!"
-                    )
-                    engine.inventar["luke_nøkkel1"] = True
-                    status["poeng"] += 100
+                utfall = engine.sjansemekanikk("malingsspann", status)
+                if utfall == "seier":
+                    if not engine.inventar["luke_nøkkel1"]:
+                        print(
+                            "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
+                            "Inni finner du en gammeldags nøkkel!"
+                        )
+                        engine.inventar["luke_nøkkel1"] = True
+                        status["poeng"] += 100
+                    else:
+                        print("Malingsspannene er tomme nå.")
                 else:
-                    print("Malingsspannene er tomme nå.")
+                    print("Du prøver å lirke opp det inntørka malingsspannet med brekkjernet, og selv om det ser ut til å hjelpe åpner det seg ikke.")
             else:
                 print("Det ser ikke ut til å fungere her.")
 
@@ -512,20 +516,25 @@ def rom8(rom, restart, status, besøkt):
                     print(f"Du har ikke {item} i inventaret.")
                     continue
             elif item == "brekkjern" and target == "ventil":
-                print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
-                      "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
-                status["åpen_ventil"] = True
-                status["poeng"] += 150
-                engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
-                "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
-                "På østveggen er det en stor åpning. Dører leder nord og sør."
-                )
-                engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
-                "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
-                "Der er en åpning på østveggen."
-                )
-                engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
-                engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
+                utfall = engine.sjansemekanikk("ventil", status)
+                if utfall == "seier":
+                    print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
+                        "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
+                    status["åpen_ventil"] = True
+                    status["poeng"] += 150
+                    engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
+                    "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+                    "På østveggen er det en stor åpning. Dører leder nord og sør."
+                    )
+                    engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
+                    "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
+                    "Der er en åpning på østveggen."
+                    )
+                    engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
+                    engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
+                else:
+                    print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til. \n" \
+                          "Den beveger seg litt, men du får den ikke helt opp.")
 
         else:
             print(engine.ugyldig)
