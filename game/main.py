@@ -82,3 +82,9 @@ while True:
         engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_1(engine.rom, engine.restart, engine.status, engine.besøkt)
     elif engine.rom == "kjeller2_2":
         engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_2(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "kjeller2_3":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_3(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "kjeller2_4":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_4(engine.rom, engine.restart, engine.status, engine.besøkt)
+    elif engine.rom == "kjeller2_5":
+        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_5(engine.rom, engine.restart, engine.status, engine.besøkt)
