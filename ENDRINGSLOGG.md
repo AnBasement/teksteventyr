@@ -6,6 +6,15 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.0] - 2025-09-14
+### Lagt til
+- Introduserer en sjansemekanikk
+    - Sjansemekanikk er implementerr i noen eldre interaksjoner.
+    - Virker i grunn som et myntkast, men ved påfølgende forsøk øker sjansen for suksess.
+- Introduserer tre nye rom.
+
+---
+
 ## [1.4.1] - 2025-09-08
 ### Fikset
 - Funksjonen kjeller2_2() returnerte ingenting, dette er fikset.

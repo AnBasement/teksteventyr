@@ -86,6 +86,15 @@ kjeller2_1_inngang_tekst = (
 kjeller2_2_inngang_tekst = (
     "Du går inn i et rom som ser ut som en blanding av laboratorium og torturkammer."
 )
+kjeller2_3_inngang_tekst = (
+    "Når du åpner døren hører du en svak summing som høres ut som om det kommer fra noe elektronikk."
+)
+kjeller2_4_inngang_tekst = (
+    "Du trer inn i et rom som glitrer svakt. Lukten av salt slår mot deg, og gulvet knaser lett under føttene."
+)
+kjeller2_5_inngang_tekst = (
+    "Du går inn i et trangt, mørkt rom. Lukten av gammel mat og støv fyller nesen, og en skygge beveger seg i hjørnet."
+)
 
 # Tekst som vises ved "utforsk"-kommando
 rom1_utforsk_tekst = (
@@ -154,12 +163,28 @@ rom13_utforsk_tekst = (
 kjeller2_1_utforsk_tekst = (
     "Du står i bunnen av stigen. En stige går langs den ene veggen, men ser ikke ut til å lede noe sted. "
     "Veggene er grove og ser nesten ut til å være hogget ut manuelt, og du hører konstant sildring og drypping. "
-    "Til øst ser du en døråpning."
+    "Du ser døråpninger i alle himmelretninger."
 )
 kjeller2_2_utforsk_tekst = (
     "Rommet har et trykkende preg. Nedstøvete bokhyller står langs veggene, og både gulvet og bordene er dekket med kolber i varierende stand. "
     "På et bord står et gammelt treskrin med hengelås, tydelig tilsynelatende verdifullt. Langs den ene veggen er et verktøyskap. "
     "En dør leder vest."
+)
+kjeller2_3_utforsk_tekst = (
+    "Rundt i rommet står flere brukte gaming-stoler, noen med løse hjul. "
+    "Tomme energidrikkbokser er spredt på gulvet, og et headset fra 2005 ligger på et teppe med Pikachu-motiv. "
+    "På veggen henger en gammel TV som lager statisk lyd. " \
+    "Det er en dør som leder nord."
+)
+kjeller2_4_utforsk_tekst = (
+    "Rundt i rommet ser du små saltkrystaller som dekker gulv og vegger. "
+    "I et hjørne står en gammel gryte fylt med hvitt pulver, og på veggen henger et kryptisk symbol. " \
+    "Det er en dør som leder øst."
+)
+kjeller2_5_utforsk_tekst = (
+    "Rommet er fullt av gamle planker og kroker, noen løse og noen solide. "
+    "På gulvet ligger noen gamle pølser, og i hjørnet skimtes en skummel skygge. " \
+    "Det er en dør som leder sør."
 )
 
 # Dict som kobler rom til utforsk-tekst

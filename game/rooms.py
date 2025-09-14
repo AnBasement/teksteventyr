@@ -888,3 +888,13 @@ def kjeller2_2(rom, restart, status, besøkt):
             print(engine.ugyldig)
 
     return rom, restart, status, besøkt
+
+#Funksjon for kjeller2_3
+def kjeller2_3(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_3", engine.kjeller2_3_inngang_tekst, engine.kjeller2_3_utforsk_tekst, besøkt)
+
+    while True:
+        verb, obj = engine.parse_kommando()
+
+        if verb == "gå":
+            pass
