@@ -23,6 +23,9 @@ romposisjoner = {
 kjeller2_posisjoner = {
     "kjeller2_1": {"pos": (2, 4), "trapper": True},
     "kjeller2_2": {"pos": (2, 8), "trapper": False},
+    "kjeller2_3": {"pos": (4, 4), "trapper": False},
+    "kjeller2_4": {"pos": (2, 0), "trapper": False},
+    "kjeller2_5": {"pos": (0, 4), "trapper": False}
 }
 
 # Kart for første etasje (rom1–rom11 + gang1)
@@ -49,7 +52,8 @@ def vis_kart():
         rompos = kjeller2_posisjoner
         rader, kolonner = 5, 20
         koblinger = [
-            ("kjeller2_1", "kjeller2_2"),
+            ("kjeller2_1", "kjeller2_2"), ("kjeller2_1", "kjeller2_3"), ("kjeller2_1", "kjeller2_4")
+            ("kjeller2_1", "kjeller2_5")
         ]
     else:
         print("Ingen kartdata for dette rommet.")
