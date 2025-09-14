@@ -897,4 +897,41 @@ def kjeller2_3(rom, restart, status, besøkt):
         verb, obj = engine.parse_kommando()
 
         if verb == "gå":
-            pass
+            if obj == "nord":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj in ["stol", "stoler", "gamingstoler", "gamingstol"]:
+                print("Stolene ser ekstremt godt brukt ut med klare merker på stolsetene. En av stolene har løse hjul.")
+            elif obj in ["energidrikke", "drikkeboks"]:
+                print("Gulvet er nesten dekt i tomme og halvtomme bokser med energidrikke. Alt fra Red Bull til Monster til et merke du ikke kjenner igjen, 'KjellEnergi'.")
+            elif obj == "tv":
+                print("Det begynner å bli en del år siden sist du så en slik gammeldags boks-TV, og du har aldri sett en i denne størrelsen. Den dekker omtrent hele den ene veggen. \n" \
+                      "Du kan se noen skrapemerker på gulvet som indikerer at TVen har blitt flyttet bort fra veggen opp til flere ganger.")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "ta":
+            if obj in ["hjul", "stolhjul"]:
+                print("Du flipper en av stolene og river litt i hjulene. Ett av dem løsner, og du legger det i lommen.")
+                engine.inventar["stolhjul"] = True
+            elif obj in ["energidrikke", "drikkeboks"]:
+                print("Du vurderer å plukke opp noen av boksene, men ombestemmer deg når du ser hvor klissete de er...")
+
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item in ["hjul", "stolhjul"] and target == "tv":
+                if not engine.status["tv-kode"]:
+                    print("Med all din makt klarer du så vidt å løfte TV-en opp og snike stolhjulet under. \n"
+                          "Du klarer å svinge TVen bort fra veggen, og ser fire tall risset inn på baksiden av TVen. 1992.")
+                    engine.status["tv-kode"] = True
+                else:
+                    print("Du ser ikke noe poeng i å prøve å flytte på TVen igjen.")
+
+        else:
+            print(engine.ugyldig)
+
+    return rom, restart, status, besøkt

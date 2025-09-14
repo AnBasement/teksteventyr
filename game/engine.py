@@ -171,9 +171,9 @@ kjeller2_2_utforsk_tekst = (
     "En dør leder vest."
 )
 kjeller2_3_utforsk_tekst = (
-    "Rundt i rommet står flere brukte gaming-stoler, noen med løse hjul. "
-    "Tomme energidrikkbokser er spredt på gulvet, og et headset fra 2005 ligger på et teppe med Pikachu-motiv. "
-    "På veggen henger en gammel TV som lager statisk lyd. " \
+    "Rundt i rommet står flere brukte gamingstoler, noen med løse hjul. "
+    "Tomme energidrikkbokser er spredt på gulvet, og et gammelt headset ligger på et teppe med Pikachu-motiv. "
+    "Langs den ene veggen står en massiv og eldgammel TV som lager statisk lyd. " \
     "Det er en dør som leder nord."
 )
 kjeller2_4_utforsk_tekst = (
@@ -205,6 +205,9 @@ utforsk_tekster = {
     "rom13": rom13_utforsk_tekst,
     "kjeller2_1": kjeller2_1_utforsk_tekst,
     "kjeller2_2": kjeller2_2_utforsk_tekst,
+    "kjeller2_3": kjeller2_3_utforsk_tekst,
+    "kjeller2_4": kjeller2_4_utforsk_tekst,
+    "kjeller2_5": kjeller2_5_utforsk_tekst,
 }
 
 # =========================
@@ -229,6 +232,9 @@ besøkt = {
     "rom13": False,
     "kjeller2_1": False,
     "kjeller2_2": False,
+    "kjeller2_3": False,
+    "kjeller2_4": False,
+    "kjeller2_5": False,
 }
 
 # Interagerbare objekter
@@ -246,6 +252,7 @@ status = {
     "åpen_luke": False,
     "krukke": False,
     "rom13_skrin": False,
+    "tv-kode": False,
     "skrin13": 0,
     "skrin2_2": 0,
     "ventil": 0,
@@ -266,6 +273,7 @@ inventar = {
     "jernkrok": False,
     "luke_nøkkel1": False,
     "luke_nøkkel2": False,
+    "stolhjul": False
 }
 
 # Vekter for sjansemekanikk
@@ -294,6 +302,7 @@ gyldige_valg_i_rom = {
     "rom13": ["nord", "skrin", "sokkel", "vegg", "vegger", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_1": ["luke", "øst", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_2": ["vest", "bokhylle", "bokhyller", "kolbe", "kolber", "skrin", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_3": ["nord", "stol", "stoler", "gamingstol", "gamingstoler", "energidrikke", "drikkeboks", "tv", "hjul", "stolhjul", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
 }
 
 # =========================
