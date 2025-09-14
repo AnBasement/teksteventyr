@@ -953,4 +953,5 @@ def kjeller2_4(rom, restart, status, besøkt):
                 print(engine.ingen_vei)
 
         elif verb == "se":
-            
+            if obj == "gryte":
+                
