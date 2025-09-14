@@ -911,6 +911,8 @@ def kjeller2_3(rom, restart, status, besøkt):
             elif obj == "tv":
                 print("Det begynner å bli en del år siden sist du så en slik gammeldags boks-TV, og du har aldri sett en i denne størrelsen. Den dekker omtrent hele den ene veggen. \n" \
                       "Du kan se noen skrapemerker på gulvet som indikerer at TVen har blitt flyttet bort fra veggen opp til flere ganger.")
+            elif obj in ["teppe", "pikachu"]:
+                print("Teppet var kanskje gult en gang før i tiden, men er blitt såpass tilsølet at det knapt er mulig å se den lille gule rotten.")
             else:
                 print(engine.ugyldig)
 
@@ -935,3 +937,20 @@ def kjeller2_3(rom, restart, status, besøkt):
             print(engine.ugyldig)
 
     return rom, restart, status, besøkt
+
+#Funksjon for kjeller2_4
+def kjeller2_4(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_4", engine.kjeller2_4_inngang_tekst, engine.kjeller2_4_utforsk_tekst)
+
+    while True:
+        verb, obj = engine.parse_kommando()
+
+        if verb == "gå":
+            if obj == "øst":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            
