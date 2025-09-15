@@ -178,7 +178,7 @@ kjeller2_3_utforsk_tekst = (
 )
 kjeller2_4_utforsk_tekst = (
     "Rundt i rommet ser du små saltkrystaller som dekker gulv og vegger. "
-    "I et hjørne står en gammel gryte fylt med hvitt pulver, og på veggen henger et kryptisk symbol. " \
+    "I et hjørne står en gammel gryte, og på veggen henger et kryptisk symbol. " \
     "Det er en dør som leder øst."
 )
 kjeller2_5_utforsk_tekst = (
@@ -257,7 +257,9 @@ status = {
     "skrin2_2": 0,
     "ventil": 0,
     "malingsspann": 0,
+    "gamercoke": 0,
     "kolber": False,
+    "planker": False,
     "helse": 3,
     "poeng": 0
 }
@@ -281,7 +283,9 @@ sjanser = {
     "rom13_vekter": [(50, 50), (75, 25), (100, 0)],
     "malingsspann": [(50, 50), (75, 25), (100, 0)],
     "ventil": [(50, 50), (75, 25), (100, 0)],
-    "kjeller2_2_vekter": [(50, 50), (75, 25), (100, 0)]
+    "kjeller2_2_vekter": [(50, 50), (75, 25), (100, 0)],
+    "gamercoke": [(50, 50), (75, 25), (100, 0)],
+    "planker": [(50, 50), (75, 25), (100, 0)]
 }
 
 # Gyldige valg i hvert rom
@@ -300,9 +304,11 @@ gyldige_valg_i_rom = {
     "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "nøkkel", "kode", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom12": ["øst", "sør", "hylle", "hyller", "kasse", "kasser", "filler", "stoffrester", "pose", "jernkrok", "krok", "krukke", "nøkkel", "gugge", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom13": ["nord", "skrin", "sokkel", "vegg", "vegger", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
-    "kjeller2_1": ["luke", "øst", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_1": ["luke", "øst", "sør", "nord", "vest", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_2": ["vest", "bokhylle", "bokhyller", "kolbe", "kolber", "skrin", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_3": ["nord", "stol", "stoler", "gamingstol", "gamingstoler", "energidrikke", "drikkeboks", "tv", "hjul", "stolhjul", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_4": ["øst", "gryte", "symbol", "saltkrystaller", "saltpose", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_5": ["sør", "krok", "kroker", "planke", "planker", "skygge", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
 }
 
 # =========================
@@ -397,9 +403,9 @@ def endre_helse(endring: int):
 # Funksjon for sjansemekanikk
 def sjansemekanikk(hendelse, status):
     status[hendelse] = status.get(hendelse, 0) + 1
-    forsøk = status(hendelse)
+    forsøk = status[hendelse]
 
-    vekter = sjanser(hendelse)
+    vekter = sjanser[hendelse]
     w = vekter[min(forsøk - 1, len(vekter) - 1)]
 
     return random.choices(["seier", "tap"], weights = w) [0]

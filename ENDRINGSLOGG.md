@@ -13,6 +13,9 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Virker i grunn som et myntkast, men ved påfølgende forsøk øker sjansen for suksess.
 - Introduserer tre nye rom.
 
+### Fikset
+- Funksjonen for sjansemekanikken skal være fikset nå
+
 ### Endret
 - Oppdatert rombeskrivelse i `kjeller2_1`
 
