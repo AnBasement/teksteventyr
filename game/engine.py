@@ -3,6 +3,7 @@
 import os
 import kartdata as kart
 import json
+import random
 
 # =========================
 # Globale variabler og stier
@@ -85,6 +86,15 @@ kjeller2_1_inngang_tekst = (
 kjeller2_2_inngang_tekst = (
     "Du går inn i et rom som ser ut som en blanding av laboratorium og torturkammer."
 )
+kjeller2_3_inngang_tekst = (
+    "Når du åpner døren hører du en svak summing som høres ut som om det kommer fra noe elektronikk."
+)
+kjeller2_4_inngang_tekst = (
+    "Du trer inn i et rom som glitrer svakt. Lukten av salt slår mot deg, og gulvet knaser lett under føttene."
+)
+kjeller2_5_inngang_tekst = (
+    "Du går inn i et trangt, mørkt rom. Lukten av gammel mat og støv fyller nesen, og en skygge beveger seg i hjørnet."
+)
 
 # Tekst som vises ved "utforsk"-kommando
 rom1_utforsk_tekst = (
@@ -153,12 +163,28 @@ rom13_utforsk_tekst = (
 kjeller2_1_utforsk_tekst = (
     "Du står i bunnen av stigen. En stige går langs den ene veggen, men ser ikke ut til å lede noe sted. "
     "Veggene er grove og ser nesten ut til å være hogget ut manuelt, og du hører konstant sildring og drypping. "
-    "Til øst ser du en døråpning."
+    "Du ser døråpninger i alle himmelretninger."
 )
 kjeller2_2_utforsk_tekst = (
     "Rommet har et trykkende preg. Nedstøvete bokhyller står langs veggene, og både gulvet og bordene er dekket med kolber i varierende stand. "
     "På et bord står et gammelt treskrin med hengelås, tydelig tilsynelatende verdifullt. Langs den ene veggen er et verktøyskap. "
     "En dør leder vest."
+)
+kjeller2_3_utforsk_tekst = (
+    "Rundt i rommet står flere brukte gamingstoler, noen med løse hjul. "
+    "Tomme energidrikkbokser er spredt på gulvet, og et gammelt headset ligger på et teppe med Pikachu-motiv. "
+    "Langs den ene veggen står en massiv og eldgammel TV som lager statisk lyd. " \
+    "Det er en dør som leder nord."
+)
+kjeller2_4_utforsk_tekst = (
+    "Rundt i rommet ser du små saltkrystaller som dekker gulv og vegger. "
+    "I et hjørne står en gammel gryte, og på veggen henger et kryptisk symbol. " \
+    "Det er en dør som leder øst."
+)
+kjeller2_5_utforsk_tekst = (
+    "Rommet er fullt av gamle planker og kroker, noen løse og noen solide. "
+    "På gulvet ligger noen gamle pølser, og i hjørnet skimtes en skummel skygge. " \
+    "Det er en dør som leder sør."
 )
 
 # Dict som kobler rom til utforsk-tekst
@@ -179,6 +205,9 @@ utforsk_tekster = {
     "rom13": rom13_utforsk_tekst,
     "kjeller2_1": kjeller2_1_utforsk_tekst,
     "kjeller2_2": kjeller2_2_utforsk_tekst,
+    "kjeller2_3": kjeller2_3_utforsk_tekst,
+    "kjeller2_4": kjeller2_4_utforsk_tekst,
+    "kjeller2_5": kjeller2_5_utforsk_tekst,
 }
 
 # =========================
@@ -203,6 +232,9 @@ besøkt = {
     "rom13": False,
     "kjeller2_1": False,
     "kjeller2_2": False,
+    "kjeller2_3": False,
+    "kjeller2_4": False,
+    "kjeller2_5": False,
 }
 
 # Interagerbare objekter
@@ -220,7 +252,14 @@ status = {
     "åpen_luke": False,
     "krukke": False,
     "rom13_skrin": False,
+    "tv-kode": False,
+    "skrin13": 0,
+    "skrin2_2": 0,
+    "ventil": 0,
+    "malingsspann": 0,
+    "gamercoke": 0,
     "kolber": False,
+    "planker": False,
     "helse": 3,
     "poeng": 0
 }
@@ -236,6 +275,17 @@ inventar = {
     "jernkrok": False,
     "luke_nøkkel1": False,
     "luke_nøkkel2": False,
+    "stolhjul": False
+}
+
+# Vekter for sjansemekanikk
+sjanser = {
+    "rom13_vekter": [(50, 50), (75, 25), (100, 0)],
+    "malingsspann": [(50, 50), (75, 25), (100, 0)],
+    "ventil": [(50, 50), (75, 25), (100, 0)],
+    "kjeller2_2_vekter": [(50, 50), (75, 25), (100, 0)],
+    "gamercoke": [(50, 50), (75, 25), (100, 0)],
+    "planker": [(50, 50), (75, 25), (100, 0)]
 }
 
 # Gyldige valg i hvert rom
@@ -254,8 +304,11 @@ gyldige_valg_i_rom = {
     "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "nøkkel", "kode", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom12": ["øst", "sør", "hylle", "hyller", "kasse", "kasser", "filler", "stoffrester", "pose", "jernkrok", "krok", "krukke", "nøkkel", "gugge", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom13": ["nord", "skrin", "sokkel", "vegg", "vegger", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
-    "kjeller2_1": ["luke", "øst", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_1": ["luke", "øst", "sør", "nord", "vest", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_2": ["vest", "bokhylle", "bokhyller", "kolbe", "kolber", "skrin", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_3": ["nord", "stol", "stoler", "gamingstol", "gamingstoler", "energidrikke", "drikkeboks", "tv", "hjul", "stolhjul", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_4": ["øst", "gryte", "symbol", "saltkrystaller", "saltpose", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "kjeller2_5": ["sør", "krok", "kroker", "planke", "planker", "skygge", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
 }
 
 # =========================
@@ -346,6 +399,16 @@ def endre_helse(endring: int):
                 besøkt[key] = False
             for key in inventar:
                 inventar[key] = False
+
+# Funksjon for sjansemekanikk
+def sjansemekanikk(hendelse, status):
+    status[hendelse] = status.get(hendelse, 0) + 1
+    forsøk = status[hendelse]
+
+    vekter = sjanser[hendelse]
+    w = vekter[min(forsøk - 1, len(vekter) - 1)]
+
+    return random.choices(["seier", "tap"], weights = w) [0]
 
 # Funksjon som nullstiller besøkte rom
 def nullstill_rom(romnavn, besøkt):

@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.4.1  
+**Versjon:** 1.5.0  
 **Lisens:** GNU GPLv3
 
 ---
@@ -37,17 +37,13 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 
 - Filen ble delt opp i tre i uke 7 for bedre oversikt. Også en rekke bugfikser og bruk av os-modul for enklere kontroll over filstier. Tre nye rom ble introdusert som setter opp for videre utvidelse. Innfører også et inventar og endrer kommando-bruk.
 
+- Poengsystem, ASCII-kart og en sjansemekanikk er blitt introdusert sammen med utvidelse til et nytt nivå. Spillet lagres til JSON istedenfor en txt-fil.
+
 ---
 
 ## Plan for videre utvikling
 
-### Uke 8
-- Refaktorer eksisterende filer.
-- Legg til muligheten for et "kart".
-- Implementer helse og inventar.
-
-### Videre
-Usikker på hvor veien går videre, en kjeller kan bare ha så mange rom, men det er jo ikke helt uhørt å ha to etasjer under bakken, eller?
+- Både forenkle videre utvidelser og kutte ned på antall linjer med kode ved å gjøre rom om til klasser.
 
 ---
 

@@ -149,15 +149,19 @@ def rom3(rom, restart, status, besøkt):
                 continue
 
             if item == "brekkjern" and target == "malingsspann":
-                if not engine.inventar["luke_nøkkel1"]:
-                    print(
-                        "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
-                        "Inni finner du en gammeldags nøkkel!"
-                    )
-                    engine.inventar["luke_nøkkel1"] = True
-                    status["poeng"] += 100
+                utfall = engine.sjansemekanikk("malingsspann", status)
+                if utfall == "seier":
+                    if not engine.inventar["luke_nøkkel1"]:
+                        print(
+                            "Du bruker det lille brekkjernet du fant til å åpne malingsspannet som hadde noe inni seg.\n"
+                            "Inni finner du en gammeldags nøkkel!"
+                        )
+                        engine.inventar["luke_nøkkel1"] = True
+                        status["poeng"] += 100
+                    else:
+                        print("Malingsspannene er tomme nå.")
                 else:
-                    print("Malingsspannene er tomme nå.")
+                    print("Du prøver å lirke opp det inntørka malingsspannet med brekkjernet, og selv om det ser ut til å hjelpe åpner det seg ikke.")
             else:
                 print("Det ser ikke ut til å fungere her.")
 
@@ -512,20 +516,28 @@ def rom8(rom, restart, status, besøkt):
                     print(f"Du har ikke {item} i inventaret.")
                     continue
             elif item == "brekkjern" and target == "ventil":
-                print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
-                      "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
-                status["åpen_ventil"] = True
-                status["poeng"] += 150
-                engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
-                "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
-                "På østveggen er det en stor åpning. Dører leder nord og sør."
-                )
-                engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
-                "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
-                "Der er en åpning på østveggen."
-                )
-                engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
-                engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
+                if engine.inventar["brekkjern"]:
+                    utfall = engine.sjansemekanikk("ventil", status)
+                    if utfall == "seier":
+                        print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
+                            "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
+                        status["åpen_ventil"] = True
+                        status["poeng"] += 150
+                        engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
+                        "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
+                        "På østveggen er det en stor åpning. Dører leder nord og sør."
+                        )
+                        engine.rom4_utforsk_tekst = ("I midten av rommet står en trapp opp til etasjen over. Du ser en dør i enden av trappen.\n" \
+                        "Under trappen står et gammelt skrivebord med en stol. På vestveggen er det et åpent hull.\n"
+                        "Der er en åpning på østveggen."
+                        )
+                        engine.utforsk_tekster["rom8"] = engine.rom8_utforsk_tekst
+                        engine.utforsk_tekster["rom4"] = engine.rom4_utforsk_tekst
+                    else:
+                        print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til. \n" \
+                            "Den beveger seg litt, men du får den ikke helt opp.")
+                else:
+                    print(f"Du har ikke {item} i inventaret.")
 
         else:
             print(engine.ugyldig)
@@ -809,8 +821,17 @@ def kjeller2_1(rom, restart, status, besøkt):
             if obj == "luke":
                 rom = "rom11"
                 break
-            if obj == "øst":
+            elif obj == "øst":
                 rom = "kjeller2_2"
+                break
+            elif obj == "sør":
+                rom = "kjeller2_3"
+                break
+            elif obj == "vest":
+                rom = "kjeller2_4"
+                break
+            elif obj == "nord":
+                rom = "kjeller2_5"
                 break
             else:
                 print(engine.ingen_vei)
@@ -873,6 +894,176 @@ def kjeller2_2(rom, restart, status, besøkt):
                     engine.inventar["har_nøkkel"] = True
                 else:
                     print("Tror ikke det er så mye mer brekkjernet kan gjøre med dette gamle skrinet...")
+            else:
+                print(engine.ugyldig)
+        else:
+            print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
+
+#Funksjon for kjeller2_3
+def kjeller2_3(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_3", engine.kjeller2_3_inngang_tekst, engine.kjeller2_3_utforsk_tekst, besøkt)
+
+    while True:
+        verb, obj = engine.parse_kommando()
+
+        if verb == "gå":
+            if obj == "nord":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj in ["stol", "stoler", "gamingstoler", "gamingstol"]:
+                print("Stolene ser ekstremt godt brukt ut med klare merker på stolsetene. En av stolene har løse hjul.")
+            elif obj in ["energidrikke", "drikkeboks"]:
+                print("Gulvet er nesten dekt i tomme og halvtomme bokser med energidrikke. Alt fra Red Bull til Monster til et merke du ikke kjenner igjen, 'KjellEnergi'.")
+            elif obj == "tv":
+                print("Det begynner å bli en del år siden sist du så en slik gammeldags boks-TV, og du har aldri sett en i denne størrelsen. Den dekker omtrent hele den ene veggen. \n" \
+                      "Du kan se noen skrapemerker på gulvet som indikerer at TVen har blitt flyttet bort fra veggen opp til flere ganger.")
+            elif obj in ["teppe", "pikachu"]:
+                print("Teppet var kanskje gult en gang før i tiden, men er blitt såpass tilsølet at det knapt er mulig å se den lille gule rotten.")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "ta":
+            if obj in ["hjul", "stolhjul"]:
+                print("Du flipper en av stolene og river litt i hjulene. Ett av dem løsner, og du legger det i lommen.")
+                engine.inventar["stolhjul"] = True
+            elif obj in ["energidrikke", "drikkeboks"]:
+                print("Du vurderer å plukke opp noen av boksene, men ombestemmer deg når du ser hvor klissete de er...")
+
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item in ["hjul", "stolhjul"] and target == "tv":
+                if not engine.status["tv-kode"]:
+                    print("Med all din makt klarer du så vidt å løfte TV-en opp og snike stolhjulet under. \n"
+                          "Du klarer å svinge TVen bort fra veggen, og ser fire tall risset inn på baksiden av TVen. 1992.")
+                    engine.status["tv-kode"] = True
+                else:
+                    print("Du ser ikke noe poeng i å prøve å flytte på TVen igjen.")
+
+        else:
+            print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
+
+#Funksjon for kjeller2_4
+def kjeller2_4(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_4", engine.kjeller2_4_inngang_tekst, engine.kjeller2_4_utforsk_tekst, besøkt)
+
+    while True:
+        verb, obj = engine.parse_kommando()
+
+        if verb == "gå":
+            if obj == "øst":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj == "gryte":
+                print("Du kikker oppi gryten og merker at den er fult av et hvitt pulver.")
+            elif obj == "symbol":
+                print("Ved nærmere undersøking ser du at symbolene på veggene egentlig er en eller annen form for oppskrift for 'GamerCoke'. \n" \
+                "Det er vanskelig å tyde, men du fatter at det er en slags blanding av taurin, koffeinpulver, kokain og salt?")
+            elif obj == "saltkrystaller":
+                print("Saltkrystallene som dekker veggene og henger fra taket i rommet er underlig fine der de glitrer i lyset.")
+            else:
+                print(engine.ugyldig)
+        
+        elif verb == "ta":
+            if obj == "saltkrystaller":
+                print("Du forsøker å knekke av litt av saltkrystallene, men merker kjapt at de er litt for harde og at du ikke egentlig ser poenget.")
+            elif obj == "gryte":
+                print("Du forsøker å løfte den tunge jerngryta, og med litt arbeid får du den opp, før du innser at du ikke trenger en gryte.")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item == "saltpose" and target == "gryte":
+                if engine.inventar["saltpose"]:
+                    engine.inventar["saltpose"] = False
+                    svar = input("Du heller saltet oppi gryten med det hvite pulveret og rister den litt rundt for å blande det. \n" \
+                    "Når du er fornøyd, stirrer du ned på et pulver som er nøyaktig likt som før. Vil du ta sjansen på å smake? (ja/nei)\n>").lower().strip()
+                    if svar == "ja":
+                        utfall = engine.sjansemekanikk("gamercoke", status)
+                        if utfall == "seier":
+                            engine.endre_helse(+1)
+                            print("Du slikker på fingen og stipper den ned i pulveret og stikker den kjapt i munnen etterpå.\n" \
+                            "Du kjenner umiddelbart at hjertet ditt slår fortere og du føler deg litt kvikkere.\n" \
+                            f"Du får 1 helsepoeng, og har nå {engine.status['helse']}.")
+                            status["poeng"] += 50
+                        else:
+                            engine.endre_helse(-1)
+                            print("Du slikker på fingen og stipper den ned i pulveret og stikker den kjapt i munnen etterpå.\n" \
+                            "En beisk smak fyller munnen din og du kjenner et stikk i hjertet. Kanskje ikke en god ide å smake på ukjent pulver...\n" \
+                            f"Du mister 1 helsepoeng, og har nå {engine.status['helse']}.")
+                    elif svar == "nei":
+                        print("Sikkert en god ide å ikke ta sjansen på en haug med ukjent pulver i en kjeller.")
+                else:
+                    print(f"Du har ikke {item} i inventaret.")
+            else:
+                print(engine.ugyldig)
+        else:
+            print(engine.ugyldig)
+
+    return rom, restart, status, besøkt
+
+# Funksjon for kjeller2_5
+def kjeller2_5(rom, restart, status, besøkt):
+    besøkt = engine.rombeskrivelse("kjeller2_5", engine.kjeller2_5_inngang_tekst, engine.kjeller2_5_utforsk_tekst, besøkt)
+
+    while True:
+        verb, obj = engine.parse_kommando()
+
+        if verb == "gå":
+            if obj == "sør":
+                rom = "kjeller2_1"
+                break
+            else:
+                print(engine.ingen_vei)
+
+        elif verb == "se":
+            if obj in ["krok", "kroker"]:
+                print("En haug med kleskroker henger langs veggene, noen henger så vidt fast.")
+            elif obj in ["planke", "planker"]:
+                print("Det ligger planker strødd rundt i rommet. I det ene hjørnet ser det ut som om noen av dem er spikret sammen. Kanskje for å skjule noe?")
+            elif obj == "skygge":
+                print("Du tar et nølende skritt mot skyggen i hjørnet og føler at den beveger seg. Når du nærmer deg ser du at det bare er en stumtjener med en jakke og hatt.")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "ta":
+            if obj in ["krok", "kroker"]:
+                print("Du rikker litt på noen av krokene, men selv de som sitter løst faller ikke av. Ser ikke helt poenget med å plukke med deg noen kleskroker uansett...")
+            else:
+                print(engine.ugyldig)
+
+        elif verb == "bruk" and isinstance(obj, tuple):
+            item, target = obj
+            if item == "brekkjern" and target in ["planke", "planker"]:
+                if not status["planker"]:
+                    if engine.inventar["brekkjern"]:
+                        utfall = engine.sjansemekanikk("planker", status)
+                        if utfall == "seier":
+                            print("Du river av planke etter planke med brekkjernet ditt til du finner... en sparegris?\n" \
+                            "Du knuser den i bakken, og ut faller en haug med svenske mynter og sedler.")
+                            status["poeng"] += 100
+                            status["planker"] = True
+                        else:
+                            engine.endre_helse(-1)
+                            print("Du hamrer brekkjernet inn i en glipe og drar til. Etter en stund, gir det plutselig etter, og du får en planke rett i fleisen.\n" \
+                            f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']}.")
+                            status["planker"] = True
+                    else:
+                        print(f"Du har ikke {item} i inventaret.")
+                else:
+                    print("Du tror plankene skal få ligge i fred nå.")
             else:
                 print(engine.ugyldig)
         else:
