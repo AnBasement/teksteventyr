@@ -1,7 +1,7 @@
 # Kjellerbeistet
 
 **Forfatter:** AnBasement  
-**Versjon:** 1.5.0  
+**Versjon:** 1.5.1  
 **Lisens:** GNU GPLv3
 
 ---
@@ -53,9 +53,10 @@ Dette prosjektet er både et morsomt lite spill og et læringsprosjekt for å bl
 2. Last ned filene i mappen 'game':  `main.py`, `rooms.py` og `engine.py`
 3. Kjør programmet fra terminalen med kommandoen:
 
-```bash
-python main.py
-```
+    ```bash
+    python main.py
+    ```
+
 4. Følg instruksjonene i spillet
 
 ---

@@ -17,3 +17,8 @@ replace = "# Versjon: {new_version}"
 filename = "ENDRINGSLOGG.md"
 search = "## [Uutgitt]"
 replace = "## [Uutgitt]\n\n## [{new_version}] - {now:%Y-%m-%d}"
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "**Versjon:** {current_version}"
+replace = "**Versjon:** {new_version}"
