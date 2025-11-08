@@ -9,6 +9,8 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Uutgitt]
 
+## [1.5.1] - 2025-11-08
+
 ### Lagt til
 
 - Tatt i bruk `bump-my-version` for versjonskontroll og automatisering.
