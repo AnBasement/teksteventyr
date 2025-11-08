@@ -1,0 +1,19 @@
+[tool.bumpversion]
+current_version = "1.5.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+search = "{current_version}"
+replace = "{new_version}"
+tag = true
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "game/main.py"
+search = "# Versjon: {current_version}"
+replace = "# Versjon: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "ENDRINGSLOGG.md"
+search = "## [Uutgitt]"
+replace = "## [Uutgitt]\n\n## [{new_version}] - {now:%Y-%m-%d}"

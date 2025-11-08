@@ -52,7 +52,7 @@ def vis_kart():
         rompos = kjeller2_posisjoner
         rader, kolonner = 5, 20
         koblinger = [
-            ("kjeller2_1", "kjeller2_2"), ("kjeller2_1", "kjeller2_3"), ("kjeller2_1", "kjeller2_4")
+            ("kjeller2_1", "kjeller2_2"), ("kjeller2_1", "kjeller2_3"), ("kjeller2_1", "kjeller2_4"),
             ("kjeller2_1", "kjeller2_5")
         ]
     else:
