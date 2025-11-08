@@ -9,6 +9,8 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Uutgitt]
 
+## [1.6.0] - 2025-11-08
+
 ### Lagt til
 
 - Implementerer funksjoner for spilltilstand. Disse brukes i lagre/hente-funksjoner og valideres gjennom egen funksjon som sjekker at alle påkrevde nøkler er tilstede.
