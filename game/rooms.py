@@ -23,6 +23,26 @@ def håndter_retning(retning, utganger, rom):
         
     return utganger[retning]
 
+
+def håndter_bruk(obj):
+    """
+    Grunnleggende hjelp for 'bruk'-kommandoer.
+
+    Sørger for at kommandoen har mål, og at spilleren faktisk har gjenstanden
+    dersom den spores i engine.inventar. Returnerer (item, mål) hvis sjekkene består.
+    """
+    if not isinstance(obj, tuple):
+        print(engine.ugyldig)
+        return None
+
+    item, target = obj
+    if item in engine.inventar and not engine.inventar[item]:
+        print(f"Du har ikke {item} i inventaret.")
+        return None
+
+    return item, target
+
+
 ROM_FORBINDELSER = {
     "rom1": {"øst": "rom2"},
     "rom2": {"nord": "rom3"},
@@ -45,7 +65,7 @@ ROM_FORBINDELSER = {
     },
     "rom9": {"sør": "rom6"},
     "rom10": {"vest": "rom5", "øst": "rom12"},
-    "rom11": {"nord": "rom8", "luke": "kjeller2_1"},
+    "rom11": {"nord": "rom8", "luke": "kjeller2_1", "vest": "rom12"},
     "rom12": {"øst": "rom11", "sør": "rom13"},
     "rom13": {"nord": "rom12"},
     "kjeller2_1": {
@@ -96,6 +116,11 @@ def rom1(spilltilstand):
 
                 else:
                     print(engine.ugyldig)
+            else:
+                print(engine.ugyldig)
+
+        else:
+            print(engine.ugyldig)
 
     return spilltilstand
 
@@ -206,7 +231,7 @@ def rom3(spilltilstand):
         elif verb in ["se", "ta"]:
             if obj == "malingsspann":
                 spilltilstand = rom3_malingsspann(spilltilstand, verb)
-            elif obj == "bokser":
+            elif obj == "bokser" and verb == "se":
                 print("En haug med det som ser ut til å en gang ha vært pappesker, alle merket med tallet '4', men er nå en haug med forråtnende papp.")
                 spilltilstand["status"]["tall1"] = True
                 spilltilstand["status"]["poeng"] += 25
@@ -214,11 +239,10 @@ def rom3(spilltilstand):
                 print(engine.ugyldig)
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
-
-            if item not in engine.inventar or not engine.inventar[item]:
-                print(f"Du har ikke {item} i inventaret.")
+            resultat = håndter_bruk(obj)
+            if not resultat:
                 continue
+            item, target = resultat
 
             if item == "brekkjern" and target == "malingsspann":
                 utfall = engine.sjansemekanikk("malingsspann", spilltilstand["status"])
@@ -327,7 +351,10 @@ def rom4(spilltilstand):
                         print("Feil kode. Prøv igjen.")
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "nøkkel" and target == "dør":
                 if engine.inventar["har_nøkkel"]:
                     print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
@@ -584,7 +611,10 @@ def rom8(spilltilstand):
                 print("Du forsøker å rive litt i ventilen, men får ikke skikkelig grep.")
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "brekkjern" and target in ["ovn", "oljeovn"]:
                 if engine.inventar["brekkjern"]:
                     spilltilstand["restart"], spilltilstand["rom"] = engine.tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
@@ -766,7 +796,10 @@ def rom11(spilltilstand):
                 print("Du prøver å pirke opp skiltet, men får ikke grep.")
             
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item in ["nøkkel", "kode"] and target == "luke":
                 if spilltilstand["status"]["åpen_luke"]:
                     print("Luken er allerede åpnet.")
@@ -892,7 +925,10 @@ def rom13(spilltilstand):
                 print(engine.ugyldig)
             
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "brekkjern" and target == "skrin":
                 print("Du klarer å presse brekkjernet inn i en liten sprekk og drar til med all din makt. \n"
                       "Selv etter et minutt med kaving klarer du ikke å få opp skrinet.")
@@ -980,7 +1016,10 @@ def kjeller2_2(spilltilstand):
                 print("Du plukker opp skrinet, som virker relativt lett. Låsen ser mye nyere ut enn selve skrinet. Når du rister på det hører du at det er noe inni.")
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "brekkjern" and target == "skrin":
                 if not engine.inventar["har_nøkkel"]:
                     print("Du presser brekkjernet inn under hengelåsen og rykker til. Hengelåsen faller til gulvet, og lokket spretter opp. Ut faller en nøkkel, som du plukker opp.")
@@ -1034,7 +1073,10 @@ def kjeller2_3(spilltilstand):
                 print("Du vurderer å plukke opp noen av boksene, men ombestemmer deg når du ser hvor klissete de er...")
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item in ["hjul", "stolhjul"] and target == "tv":
                 if not spilltilstand["status"]["tv-kode"]:
                     print("Med all din makt klarer du så vidt å løfte TV-en opp og snike stolhjulet under. \n"
@@ -1087,7 +1129,10 @@ def kjeller2_4(spilltilstand):
                 print(engine.ugyldig)
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "saltpose" and target == "gryte":
                 if engine.inventar["saltpose"]:
                     engine.inventar["saltpose"] = False
@@ -1153,7 +1198,10 @@ def kjeller2_5(spilltilstand):
                 print(engine.ugyldig)
 
         elif verb == "bruk" and isinstance(obj, tuple):
-            item, target = obj
+            resultat = håndter_bruk(obj)
+            if not resultat:
+                continue
+            item, target = resultat
             if item == "brekkjern" and target in ["planke", "planker"]:
                 if not spilltilstand["status"]["planker"]:
                     if engine.inventar["brekkjern"]:
