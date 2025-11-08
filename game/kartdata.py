@@ -46,7 +46,7 @@ def vis_kart():
             ("rom3", "gang1"), ("gang1", "rom5"), ("gang1", "rom6"),
             ("gang1", "rom7"), ("gang1", "rom8"), ("rom5", "rom10"),
             ("rom6", "rom9"), ("rom8", "rom11"), ("rom8", "rom4"),
-            ("rom11", "rom12"), ("rom12", "rom13")
+            ("rom10", "rom12"), ("rom11", "rom12"), ("rom12", "rom13")
         ]
     elif nåværende_rom in kjeller2_posisjoner:
         rompos = kjeller2_posisjoner
