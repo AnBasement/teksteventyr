@@ -2,7 +2,7 @@
 # eventyr.py
 #
 # Forfatter: AnBasement
-# Versjon: 1.5.1
+# Versjon: 1.5.0
 #
 # Beskrivelse:
 #   Et tekstbasert eventyrspill hvor spilleren navigerer gjennom flere rom
@@ -21,70 +21,111 @@
 
 import rooms
 import engine
+import inspect
 
-print("""Velkommen til det tekstbaserte eventyret 'Kjellerbeistet'!
-Du må forsøke å navigere deg til trappen og ut av kjelleren uten å støte på beistet.
-Om du trenger hjelp kan du skrive 'hjelp' for en liste over godkjente kommandoer.""")
+# Dictionary for håndtering av romfunksjoner
+romfunksjoner = {
+    "rom1": rooms.rom1,
+    "rom2": rooms.rom2,
+    "rom3": rooms.rom3,
+    "rom4": rooms.rom4,
+    "gang1": rooms.gang1,
+    "rom5": rooms.rom5,
+    "rom6": rooms.rom6,
+    "rom7": rooms.rom7,
+    "rom8": rooms.rom8,
+    "rom9": rooms.rom9,
+    "rom10": rooms.rom10,
+    "rom11": rooms.rom11,
+    "rom12": rooms.rom12,
+    "rom13": rooms.rom13,
+    "kjeller2_1": rooms.kjeller2_1,
+    "kjeller2_2": rooms.kjeller2_2,
+    "kjeller2_3": rooms.kjeller2_3,
+    "kjeller2_4": rooms.kjeller2_4,
+    "kjeller2_5": rooms.kjeller2_5
+}
 
-# Krever at spiller skriver "start" for å begynne
-while True:
-    start = input('Skriv "start" for å begynne, eller "last inn" for å laste inn et tidligere spill.\n> ').strip().lower()
-    if start == "start":
-        break
-    elif start == "last inn":
-        besøkt, status, rom = engine.last_inn_spill()
-        break
-    print(engine.ugyldig)
-    
-# Begynner spillet
-while True:
-    if engine.restart:
-        rom = "rom1"
-        for rom_navn in engine.besøkt:
-            engine.besøkt[rom_navn] = False
-    
-        # Nullstill status
-        for key in engine.status:
-            engine.status[key] = False
-    
-    engine.restart = False
+# Håndtering av rom for hovedløkken
+def håndter_rom(spilltilstand):
+    """
+    Kaller riktig romfunksjon basert på nåværende rom.
 
-    # Hovedløkke for å navigere gjennom rommene
-    if engine.rom == "rom1":
-        engine.rom, engine.restart, engine.besøkt = rooms.rom1(engine.rom, engine.restart, engine.besøkt)
-    elif engine.rom == "rom2":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom2(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom3":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom3(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom4":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom4(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "gang1":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.gang1(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom5":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom5(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom6":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom6(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom7":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom7(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom8":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom8(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom9":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom9(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom10":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom10(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom11":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom11(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom12":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom12(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "rom13":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.rom13(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "kjeller2_1":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_1(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "kjeller2_2":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_2(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "kjeller2_3":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_3(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "kjeller2_4":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_4(engine.rom, engine.restart, engine.status, engine.besøkt)
-    elif engine.rom == "kjeller2_5":
-        engine.rom, engine.restart, engine.status, engine.besøkt = rooms.kjeller2_5(engine.rom, engine.restart, engine.status, engine.besøkt)
+    Args:
+        rom (str): Navnet på det nåværende rommet.
+
+    Returns:
+        tuple: Oppdatert rom, restart-flag, status-dict, besøkt-dict.
+    """
+    rom = spilltilstand["rom"]
+    if rom not in romfunksjoner:
+        print(f"Feil: Rom '{rom}' finnes ikke!")
+        return spilltilstand
+
+    engine.sett_spilltilstand(spilltilstand)
+
+    oppdatert_tilstand = romfunksjoner[rom](spilltilstand)
+
+    engine.sett_spilltilstand(oppdatert_tilstand)
+
+    return oppdatert_tilstand
+
+
+def main():
+    """
+    Main game loop and initialization.
+    """
+    print("""Velkommen til det tekstbaserte eventyret 'Kjellerbeistet'!
+    Du må forsøke å navigere deg til trappen og ut av kjelleren uten å støte på beistet.
+    Om du trenger hjelp kan du skrive 'hjelp' for en liste over godkjette kommandoer.""")
+
+    # Initialiseringsvariabler
+    spilltilstand = engine.hent_spilltilstand()
+    avslutt = False
+
+    # Start eller last inn spill
+    while True:
+        start = input('Skriv "start" for å begynne, eller "last inn" for å laste inn et tidligere spill.\n> ').strip().lower()
+        if start == "start":
+            break
+        elif start == "last inn":
+            loaded_state = engine.last_inn_spill()
+            if loaded_state:
+                spilltilstand = loaded_state
+            break
+        print(engine.ugyldig)
+
+    # Hovedløkke
+    try:
+        while not avslutt:
+            spilltilstand = håndter_rom(spilltilstand)
+            
+            if spilltilstand["restart"]:
+                # Reset game state
+                spilltilstand = {
+                    "rom": "rom1",
+                    "restart": False,
+                    "besøkt": {rom: False for rom in engine.besøkt},
+                    "status": {key: False for key in engine.status},
+                    "inventar": {item: False for item in engine.inventar}
+                }
+                
+    except KeyboardInterrupt:
+        print("\n\nSpillet ble avbrutt av bruker.")
+        save_choice = input("Vil du lagre spillet før du avslutter? (ja/nei): ")
+        if save_choice.lower() == "ja":
+            engine.lagre_spill()
+        print("Takk for at du spilte!")
+        
+    except Exception as e:
+        print(f"\nEn uventet feil oppstod: {e}")
+        print("Forsøker å lagre spillet...")
+        try:
+            engine.lagre_spill()
+            print("Spillet ble lagret.")
+        except:
+            print("Kunne ikke lagre spillet.")
+        raise
+
+if __name__ == "__main__":
+    main()

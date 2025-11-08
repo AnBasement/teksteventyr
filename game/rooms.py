@@ -2,19 +2,82 @@
 
 import engine
 
-# Funksjon for rom1
-def rom1(rom, restart, besøkt):
-    besøkt = engine.rombeskrivelse("rom1", engine.rom1_inngang_tekst, engine.rom1_utforsk_tekst, besøkt)
+# Håndterer bevegelse mellom rom
+def håndter_retning(retning, utganger, rom):
+    """Gjenbrukbar logikk for bevegelse mellom rom.
+    
+    Sjekker både at retningen er tillatt i engine.gyldige_valg_i_rom og 
+    at det finnes en definert utgang i den retningen.
+    """
+    gyldige_valg = engine.gyldige_valg_i_rom.get(rom, [])
 
-    while True: 
+    # Først sjekk at retningen er en gyldig kommando i dette rommet
+    if retning not in gyldige_valg:
+        print(engine.ingen_vei)
+        return rom
+        
+    # Så sjekk at det finnes en utgang i den retningen
+    if retning not in utganger:
+        print(engine.ingen_vei)
+        return rom
+        
+    return utganger[retning]
+
+ROM_FORBINDELSER = {
+    "rom1": {"øst": "rom2"},
+    "rom2": {"nord": "rom3"},
+    "rom3": {"sør": "rom2", "vest": "rom4", "nord": "gang1"},
+    "rom4": {"øst": "rom3", "vest": "rom8"},
+    "gang1": {
+        "sør": "rom3",
+        "nordvest": "rom6",
+        "nordøst": "rom5",
+        "sørøst": "rom7",
+        "sørvest": "rom8",
+    },
+    "rom5": {"sør": "gang1", "øst": "rom10"},
+    "rom6": {"sør": "gang1", "nord": "rom9"},
+    "rom7": {"nord": "gang1"},
+    "rom8": {
+        "nord": "gang1",
+        "øst": "rom4",
+        "sør": "rom11",
+    },
+    "rom9": {"sør": "rom6"},
+    "rom10": {"vest": "rom5", "øst": "rom12"},
+    "rom11": {"nord": "rom8", "luke": "kjeller2_1"},
+    "rom12": {"øst": "rom11", "sør": "rom13"},
+    "rom13": {"nord": "rom12"},
+    "kjeller2_1": {
+        "luke": "rom11",
+        "øst": "kjeller2_2",
+        "sør": "kjeller2_3",
+        "vest": "kjeller2_4",
+        "nord": "kjeller2_5",
+    },
+    "kjeller2_2": {"vest": "kjeller2_1"},
+    "kjeller2_3": {"nord": "kjeller2_1"},
+    "kjeller2_4": {"øst": "kjeller2_1"},
+    "kjeller2_5": {"sør": "kjeller2_1"},
+}
+
+# Funksjon for rom1
+def rom1(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom1",
+        engine.rom1_inngang_tekst,
+        engine.rom1_utforsk_tekst,
+        spilltilstand["besøkt"],
+    )
+
+    while True:
         verb, obj = engine.parse_kommando()
 
         if verb == "gå":
-            if obj == "øst":
-                rom = "rom2"
-                break
-            else:
-                print(engine.ingen_vei)
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
 
         elif verb == "se":
@@ -25,7 +88,7 @@ def rom1(rom, restart, besøkt):
                     print(
                         "Du klatrer stigen opp mot vinduet. "
                         "Idet du når toppen, knekker den sammen under deg. "
-                        f"Du skader deg når du faller i bakken. Du har nå {engine.status["helse"]} helsepoeng igjen.\n"
+                        f"Du skader deg når du faller i bakken. Du har nå {engine.status['helse']} helsepoeng igjen.\n"
                     )
                     break
                 elif valg == "nei":
@@ -34,45 +97,51 @@ def rom1(rom, restart, besøkt):
                 else:
                     print(engine.ugyldig)
 
-    return rom, restart, besøkt
+    return spilltilstand
 
 # Funksjon for rom2
-def rom2(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom2", engine.rom2_inngang_tekst, engine.rom2_utforsk_tekst, besøkt)
+def rom2(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom2",
+        engine.rom2_inngang_tekst,
+        engine.rom2_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "nord":
-                rom = "rom3"
-                break
-            elif obj == "øst":
-                restart, rom = rom2_ost(restart)
-                if restart:
+            if obj == "øst":
+                spilltilstand = rom2_ost(spilltilstand)
+                if spilltilstand["restart"]:
                     break
-            else:
-                print(engine.ingen_vei)
+                continue
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
+                break
 
         elif verb == "se":
             if obj == "skap":
-                if not status["rom2_skap"]:
+                if not spilltilstand["status"]["rom2_skap"]:
                     print("Du åpner skapdørene, og støkker idet et rustent strykebrett faller over deg.\nEtter at nervene roer seg kikker du rundt i skapet, men ser ingenting av interesse.")
-                    status["rom2_skap"] = True
+                    spilltilstand["status"]["rom2_skap"] = True
                 else:
                     print("Vaskebrettet ligger på gulvet, resten av skapet er uinteressant.")
             elif obj == "arbeidsbenk":
-                status = rom2_arbeidsbenk(status)
-            elif obj == "hammer" and not status["har_hammer"]:
+                spilltilstand = rom2_arbeidsbenk(spilltilstand)
+            elif obj == "hammer" and not spilltilstand["status"]["har_hammer"]:
                 print("En gammel, rusten hammer.")
             else:
                 print(engine.ugyldig)
 
         elif verb == "ta":
-            if obj == "hammer" and not status["har_hammer"]:
+            if obj == "hammer" and not spilltilstand["status"]["har_hammer"]:
                 print("Idet du plukker opp hammeren, smuldrer treskaftet opp...")
-                status["har_hammer"] = True
-                status["poeng"] += 10
+                spilltilstand["status"]["har_hammer"] = True
+                spilltilstand["status"]["poeng"] += 10
             else:
                 print(engine.ugyldig)
 
@@ -84,18 +153,18 @@ def rom2(rom, restart, status, besøkt):
                 
         else:
             print(engine.ugyldig)
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for arbeidsbenken i rom2
-def rom2_arbeidsbenk(status):
-    if not status["har_hammer"]:
+def rom2_arbeidsbenk(spilltilstand):
+    if not spilltilstand["status"]["har_hammer"]:
         print("Arbeidsbenken består av relativt råttent treverk. Det ligger en hammer på den ene siden.")
     else:
         print("Arbeidsbenken består av relativt råttent treverk.")
-    return status
+    return spilltilstand
 
 # Funksjon for å velge øst i rom 2
-def rom2_ost(restart):
+def rom2_ost(spilltilstand):
     while True:
         svar = input("Etterhvert som du nærmer deg døren på østveggen hører du bevegelse og noe som høres ut som grynting på andre siden av døren. Vil du åpne den? (ja/nei) ").lower().strip()
         if svar == "ja":
@@ -105,39 +174,42 @@ def rom2_ost(restart):
                 "Plutselig kommer en lang arm ut av døren, som klorer etter deg. Du smeller døren igjen på armen, som trekker seg tilbake og lar deg lukke døren. "
                 f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']} helse."
             )
-            return False, "rom2"
+            spilltilstand["restart"] = False
+            spilltilstand["rom"] = "rom2"
+            return spilltilstand
         elif svar == "nei":
-            return False, "rom2"
+            spilltilstand["restart"] = False
+            spilltilstand["rom"] = "rom2"
+            return spilltilstand
         else:
             print(engine.ugyldig)
 
 # Funksjon for rom 3
-def rom3(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom3", engine.rom3_inngang_tekst, engine.rom3_utforsk_tekst, besøkt)
+def rom3(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom3",
+        engine.rom3_inngang_tekst,
+        engine.rom3_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "sør":
-                rom = "rom2"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            elif obj == "vest":
-                rom = "rom4"
-                break
-            elif obj == "nord":
-                rom = "gang1"
-                break
-            else:
-                print(engine.ingen_vei)
 
         elif verb in ["se", "ta"]:
             if obj == "malingsspann":
-                status = rom3_malingsspann(status, verb)
+                spilltilstand = rom3_malingsspann(spilltilstand, verb)
             elif obj == "bokser":
                 print("En haug med det som ser ut til å en gang ha vært pappesker, alle merket med tallet '4', men er nå en haug med forråtnende papp.")
-                status["tall1"] = True
-                status["poeng"] += 25
+                spilltilstand["status"]["tall1"] = True
+                spilltilstand["status"]["poeng"] += 25
             else:
                 print(engine.ugyldig)
 
@@ -149,7 +221,7 @@ def rom3(rom, restart, status, besøkt):
                 continue
 
             if item == "brekkjern" and target == "malingsspann":
-                utfall = engine.sjansemekanikk("malingsspann", status)
+                utfall = engine.sjansemekanikk("malingsspann", spilltilstand["status"])
                 if utfall == "seier":
                     if not engine.inventar["luke_nøkkel1"]:
                         print(
@@ -157,7 +229,7 @@ def rom3(rom, restart, status, besøkt):
                             "Inni finner du en gammeldags nøkkel!"
                         )
                         engine.inventar["luke_nøkkel1"] = True
-                        status["poeng"] += 100
+                        spilltilstand["status"]["poeng"] += 100
                     else:
                         print("Malingsspannene er tomme nå.")
                 else:
@@ -167,18 +239,18 @@ def rom3(rom, restart, status, besøkt):
 
         else:
             print(engine.ugyldig)
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for malingsspann i rom 3
-def rom3_malingsspann(status, verb):
+def rom3_malingsspann(spilltilstand, verb):
     if verb == "se":
-        if not engine.inventar["luke_nøkkel1"]:
+        if not spilltilstand["inventar"]["luke_nøkkel1"]:
             print("En haug med gamle malingsspann.")
         else:
             print("Et sett gamle malingsspann, men de er tomme nå.")
 
     elif verb == "ta":
-        if not engine.inventar["luke_nøkkel1"]:
+        if not spilltilstand["inventar"]["luke_nøkkel1"]:
             print(
                 "Du plukker opp noen av malingsspannene, og hører noe løst inni et av dem.\n"
                 "Du forsøker å åpne det, men inntørket maling og rust har gjort det nesten umulig."
@@ -186,34 +258,37 @@ def rom3_malingsspann(status, verb):
         else:
             print("Du rister på noen av de uåpnede malingsspannene, men hører ingenting.") 
 
-    return status
+    return spilltilstand
 
 # Funksjon for rom4
-def rom4(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom4", engine.rom4_inngang_tekst, engine.rom4_utforsk_tekst, besøkt)
+def rom4(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom4",
+        engine.rom4_inngang_tekst,
+        engine.rom4_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "vest":
-                if status["åpen_ventil"]:
-                    rom = "rom8"
-                    break
-                else:
-                    print(engine.ingen_vei)
-            elif obj == "øst":
-                rom = "rom3"
-                break
-            elif obj == "dør":
+            if obj == "dør":
                 print("Du klatrer opp den morkne trappa og vrir om håndtaket på døren.\n"
                 "Samme hvor hardt du prøver, lar den ikke bevege på seg. Du merker et gammeldags nøkkelhull under håndtaket.")
-            else:
+                continue
+            if obj == "vest" and not spilltilstand["status"]["åpen_ventil"]:
                 print(engine.ingen_vei)
+                continue
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
+                break
 
         elif verb == "se":
             if obj == "ventil":
-                if not status["åpen_ventil"]:
+                if not spilltilstand["status"]["åpen_ventil"]:
                     print("En stor ventil er plassert midt på vestveggen. Det kommer varm luft fra den andre siden.")
                 else:
                     print("Ventilen står lent mot veggen ved siden av den nye åpningen i veggen.")
@@ -228,7 +303,7 @@ def rom4(rom, restart, status, besøkt):
                     print("Det som uten tvil var et vakkert møbel en gang er nå slitt og råtnende. "
                     "Alle skuffene mangler utenom én, men den er låst med en 3-sifret hengelås. ")
             elif obj == "hengelås":
-                if engine.status["hengelås"]:
+                if spilltilstand["status"]["hengelås"]:
                     print("Den åpne hengelåsen ligger på skrivebordet.")
                     continue
                 while True:
@@ -244,9 +319,9 @@ def rom4(rom, restart, status, besøkt):
                         continue
                     if skrivebord_kode == 472:
                         print("Med riktig kode får du av hengelåsen. Oppi skuffen ligger et brekkjern, som du plukker opp.")
-                        engine.inventar["brekkjern"] = True
-                        engine.status["hengelås"] = True
-                        engine.status["poeng"] += 250
+                        spilltilstand["inventar"]["brekkjern"] = True
+                        spilltilstand["status"]["hengelås"] = True
+                        spilltilstand["status"]["poeng"] += 250
                         break
                     else:
                         print("Feil kode. Prøv igjen.")
@@ -258,12 +333,14 @@ def rom4(rom, restart, status, besøkt):
                     print("Du klatrer opp til døren i toppen av trappen, og setter den gamle nøkkelen i nøkkelhullet.\n"
                     "Du hører et tydelig *klikk* når du vrir den. Med noe makt klarer du å vri om håndtaket, åpne døren, og rømme ut av kjelleren.\n"
                     "Gratulerer! Du har unngått Kjellerbeistet og rømt fra kjelleren!")
-                    engine.status["poeng"] += 1000
-                    print(f"Du fullførte spillet med {engine.status["poeng"]} poeng!")
+                    spilltilstand["status"]["poeng"] += 1000
+                    print(f"Du fullførte spillet med {spilltilstand["status"]["poeng"]} poeng!")
                     while True:
                         valg_restart = input(engine.omstart).strip().lower()
                         if valg_restart == "ja":
-                            return True, "rom1", status, besøkt
+                            spilltilstand["restart"] = True
+                            spilltilstand["rom"] = "rom1"
+                            return spilltilstand
                         elif valg_restart == "nei":
                             quit()
                         else:
@@ -281,57 +358,52 @@ def rom4(rom, restart, status, besøkt):
 
         else:
             print(engine.ugyldig)
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for gang1
-def gang1(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("gang1", engine.gang1_inngang_tekst, engine.gang1_utforsk_tekst, besøkt)
+def gang1(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "gang1",
+        engine.gang1_inngang_tekst,
+        engine.gang1_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "sør":
-                rom = "rom3"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break 
-            elif obj == "nordvest":
-                rom = "rom6"
-                break 
-            elif obj == "nordøst":
-                rom = "rom5"
-                break 
-            elif obj == "sørøst":
-                rom = "rom7"
-                break 
-            elif obj == "sørvest":
-                rom = "rom8"
-                break 
-            else:
-                print(engine.ingen_vei)
                 
         else:
             print(engine.ugyldig)
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom5
-def rom5(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom5", engine.rom5_inngang_tekst, engine.rom5_utforsk_tekst, besøkt)
+def rom5(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom5",
+        engine.rom5_inngang_tekst,
+        engine.rom5_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "sør":
-                rom = "gang1"
-                break
-            elif obj == "øst":
-                if status["åpen_hylle"]:
-                    rom = "rom10"
-                    break
-                else:
-                    print(engine.ingen_vei)
-            else:
+            if obj == "øst" and not spilltilstand["status"]["åpen_hylle"]:
                 print(engine.ingen_vei)
+                continue
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
+                break
         
         elif verb == "se":
             if obj in ["esker", "kasser"]:
@@ -343,15 +415,15 @@ def rom5(rom, restart, status, besøkt):
             elif obj == "skap":
                 print("Bakerst i rommet står det et skap som minner deg om skoledagene dine. Sett bort fra tallet '7' på forsiden er det ingenting uvanlig med det.\n" \
                 "Du tar tak i håndtaket og røsker til, men skapdøren beveger seg ikke.")
-                status["tall2"] = True
-                status["poeng"] += 25
+                spilltilstand["status"]["tall2"] = True
+                spilltilstand["status"]["poeng"] += 25
             elif obj in ["hylle", "hyller"]:
                 while True:
                     svar = input("Du undersøker hyllen på østveggen litt nærmere, og merker en underlig lukt fra dem. Ved nærmere undersøkelse ser du en dør bak hyllen. Vil du forsøke å flytte på den? \n> ").strip().lower()
                     if svar == "ja":
                         print("Du dytter så hardt du kan i siden av hyllen, som etterhvert begynner å skli til siden. Bak finner du en åpenbart hjemmesnekret dør.")
-                        status["åpen_hylle"] = True
-                        status["poeng"] += 100
+                        spilltilstand["status"]["åpen_hylle"] = True
+                        spilltilstand["status"]["poeng"] += 100
                         engine.rom5_utforsk_tekst = (
                             "Du finner deg omringet av høye stabler av kasser og esker. "
                             "To høye reoler står midt i rommet, og langs den bakre veggen står et enkelt skap. "
@@ -360,72 +432,79 @@ def rom5(rom, restart, status, besøkt):
                         engine.utforsk_tekster["rom5"] = engine.rom5_utforsk_tekst
                         break
                     elif svar == "nei":
-                        rom = "rom5"
-                        restart = False
-                        return rom, restart, status, besøkt
+                        spilltilstand["rom"] = "rom5"
+                        spilltilstand["restart"] = False
+                        return spilltilstand
                     else:
                         print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom6
-def rom6(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom6", engine.rom6_inngang_tekst, engine.rom6_utforsk_tekst, besøkt)
+def rom6(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom6",
+        engine.rom6_inngang_tekst,
+        engine.rom6_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "sør":
-                rom = "gang1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            elif obj == "nord":
-                rom = "rom9"
-                break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["vaskemaskiner", "vaskemaskin"]:
                 print("Vaskemaskinene er i dårlig stand, og tydeligvis ikke brukt på en stund. Det ligger en haug med råtne klær i den ene, og ingen av dem reagerer når du trykker på knappene.")
             elif verb == "hyller":
                 print("Du ser fort over hyllene etter noe som kan hjelpe deg, men ser stort sett bare forskjellige vaskemidler av merket '2MO'.")
-                status["tall3"] = True
-                status["poeng"] += 25
+                spilltilstand["status"]["tall3"] = True
+                spilltilstand["status"]["poeng"] += 25
             elif obj in ["rør", "hjul"]:
                 svar = input("Det største av rørene har et rødt hjul festet til seg. Du tar borti røret, og kan kjenne at det beveger seg vann gjennom det. Vil du vri på hjulet? (ja/nei) ").lower().strip()
                 if svar == "ja":
-                    restart, rom = engine.tap_restart("Med noe makt klarer du å vri om på hjulet. Det begynner umiddelbart å fosse vann ut av vaskemaskinene, og et gitter smeller ned foran døren.\n" \
+                    spilltilstand["restart"], spilltilstand["rom"] = engine.tap_restart("Med noe makt klarer du å vri om på hjulet. Det begynner umiddelbart å fosse vann ut av vaskemaskinene, og et gitter smeller ned foran døren.\n" \
                     "Du prøver desperat å snu hjulet tilbake, men det sitter låst fast. Du forsøker å rive opp gitteret, men det rikker seg ikke.\n" \
                     "Det tar bare noen sekunder før rommet er fylt med vann. Uten luft svelger du ned vann, og alt går i sort.\n")
-                    return rom, restart, status, besøkt
+                    return spilltilstand
                 elif svar == "nei":
-                    rom = "rom6"
-                    restart = False
-                    return rom, restart, status, besøkt
+                    spilltilstand["rom"] = "rom6"
+                    spilltilstand["restart"] = False
+                    return spilltilstand
                 else:
                     print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom 7 - monsterkjelleren
-def rom7(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom7", engine.rom7_inngang_tekst, engine.rom7_utforsk_tekst, besøkt)
+def rom7(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom7",
+        engine.rom7_inngang_tekst,
+        engine.rom7_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "nord":
-                rom = "gang1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj == "plastsekker":
@@ -437,7 +516,7 @@ def rom7(rom, restart, status, besøkt):
             elif obj == "oppslagstavle":
                 print("Det henger et par forskjellige lapper på oppslagstavlen som ser ut til å indikere datoer på tidligere og det nåværende fermenteringsprosjektet.\n" \
                     "På en gul lapp står det '!NB! Esker, skap, såpe!'")
-                engine.status["poeng"] += 10
+                spilltilstand["status"]["poeng"] += 10
         elif verb == "ta":
             if obj == "plastsekker":
                 print("Du plukker opp en plastsekk, som umiddelbart revner.")
@@ -449,32 +528,32 @@ def rom7(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
             
 # Funksjon for rom 8 - Fyrrommet
-def rom8(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom8", engine.rom8_inngang_tekst, engine.rom8_utforsk_tekst, besøkt)
+def rom8(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom8",
+        engine.rom8_inngang_tekst,
+        engine.rom8_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "nord":
-                rom = "gang1"
-                break
-            elif obj == "øst":
-                if status["åpen_ventil"]:
-                    rom = "rom4"
-                    break
-                else:
-                    print(engine.ingen_vei)
-            elif obj == "sør":
-                if not engine.inventar["glødende_sopp"]:
-                    print("Du åpner døren som leder sør, men rommet er så mørkt at du ikke tør ta steget inn.")
-                else:
-                    rom = "rom11"
-            else:
+            if obj == "øst" and not spilltilstand["status"]["åpen_ventil"]:
                 print(engine.ingen_vei)
+                continue
+            if obj == "sør" and not engine.inventar["glødende_sopp"]:
+                print("Du åpner døren som leder sør, men rommet er så mørkt at du ikke tør ta steget inn.")
+                continue
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
+                break
         
         elif verb == "se":
             if obj in ["ovn", "oljeovn"]:
@@ -486,7 +565,7 @@ def rom8(rom, restart, status, besøkt):
             elif obj == "oljekanner":
                 print("Et par oljekanner er strødd rundt rommet, noen ser eldre ut enn andre.")
             elif obj == "ventil":
-                if not status["åpen_ventil"]:
+                if not spilltilstand["status"]["åpen_ventil"]:
                     print("En stor ventil. Du forsøker å kikke gjennom og tror du ser et annet rom på andre siden.")
                 else:
                     print("Det er en stor åpning i veggen hvor ventilen var før. Selve ventilen ligger lent opp mot veggen på andre siden.")
@@ -495,10 +574,10 @@ def rom8(rom, restart, status, besøkt):
 
         elif verb == "ta":
             if obj == "oljekanner":
-                if not status["falsk_nøkkel"]:
+                if not spilltilstand["status"]["falsk_nøkkel"]:
                     print("Du plukker opp noen av oljekannene. De fleste er helt tomme, noen kjennes fulle ut, men en av dem har noe løst i seg.\n" \
                     "Du snur den opp ned og rister på den. En gammeldags nøkkel faller ut, som du plukker opp og legger i lommen.")
-                    status["falsk_nøkkel"] = True
+                    spilltilstand["status"]["falsk_nøkkel"] = True
                 else:
                     print("Du ser ikke noe poeng i å sjekke oljekannene igjen.")
             elif obj == "ventil":
@@ -508,21 +587,21 @@ def rom8(rom, restart, status, besøkt):
             item, target = obj
             if item == "brekkjern" and target in ["ovn", "oljeovn"]:
                 if engine.inventar["brekkjern"]:
-                    restart, rom = engine.tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
+                    spilltilstand["restart"], spilltilstand["rom"] = engine.tap_restart("Du tar frem brekkjernet og ser etter et sted på oljeovnen å bryte opp.\n" \
                     "Du bestemmer deg for en liten glipe skapt av rust langs toppen av oljeovnen. Du presser brekkjernet inn og legger vekten din på det til du kjenner at det gir etter.\n" \
                     "Du får ikke egentlig med deg hva som skjer. Rommet lyser plutselig opp, og et lite øyeblikk kjenner du en intens varme i ansiktet før det går i sort for deg.")
-                    return rom, restart, status, besøkt
+                    return spilltilstand
                 else:
                     print(f"Du har ikke {item} i inventaret.")
                     continue
             elif item == "brekkjern" and target == "ventil":
                 if engine.inventar["brekkjern"]:
-                    utfall = engine.sjansemekanikk("ventil", status)
+                    utfall = engine.sjansemekanikk("ventil", spilltilstand["status"])
                     if utfall == "seier":
                         print("Du presser brekkjernet inn i en glipe på den ene siden av ventilen og røsker godt til.\n" \
                             "Ventilen faller i gulvet med et voldsomt smell, og på den andre siden ser du et rom med en trapp.")
-                        status["åpen_ventil"] = True
-                        status["poeng"] += 150
+                        spilltilstand["status"]["åpen_ventil"] = True
+                        spilltilstand["status"]["poeng"] += 150
                         engine.rom8_utforsk_tekst = ("Du står i det du bare kan anta er et gammeldags fyrrom basert på hva du har sett på film og TV. Midt i rommet står en gammel oljeovn.\n" \
                         "I taket knirker en rusten vifte i vei, og flere rør går fra oljeovnen og opp til forskjellige punkter i taket. Oljekanner står rundt om kring i rommet.\n" \
                         "På østveggen er det en stor åpning. Dører leder nord og sør."
@@ -542,21 +621,26 @@ def rom8(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom 9
-def rom9(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom9", engine.rom9_inngang_tekst, engine.rom9_utforsk_tekst, besøkt)
+def rom9(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom9",
+        engine.rom9_inngang_tekst,
+        engine.rom9_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "sør":
-                rom = "rom6"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["sopp", "glødende sopp"]:
@@ -569,18 +653,18 @@ def rom9(rom, restart, status, besøkt):
         elif verb == "ta":
             if obj in ["sopp", "glødende sopp"]:
                 print("Du tar tak i en av soppene og napper til. Gratulerer, du har en glødende sopp! Kanskje best å ikke smake på...")
-                status["glødende_sopp"] = True
-                status["poeng"] += 50
+                spilltilstand["status"]["glødende_sopp"] = True
+                spilltilstand["status"]["poeng"] += 50
             elif obj == "bøtte":
-                if not status["bøtte"]:
+                if not spilltilstand["status"]["bøtte"]:
                     svar = input("Du nærmer deg bøtten og kjenner en illeluktende dunst som gjør det litt vanskelig å puste. Plutselig virker guggen litt innbydende. Vil du smake? (ja/nei) " )
                     if svar == "ja":
                         engine.endre_helse(+1)
                         print("Du holder deg for nesen og tar forsiktig en slurk. Guggen er overraskende søt, og du får en god, varm følelse i magen.\n" \
                         "Når du setter bøtten ned igjen faller bunnen ut, og guggen renner utover gulvet.\n" \
                         f"Du får 1 helsepoeng, og har nå {engine.status['helse']}.")
-                        status["bøtte"] = True
-                        status["poeng"] += 200
+                        spilltilstand["status"]["bøtte"] = True
+                        spilltilstand["status"]["poeng"] += 200
                         engine.rom9_utforsk_tekst = ("Du står i et rom som ser ut til å ha vært hogget ut av steinen rundt kjelleren.\n" \
                         "Luften er tung og fuktig, og de grove veggene er dekket av noe som ser ut som glødende sopp. I et hjørne er det en stor pytt med mørk gugge.\n" \
                         "Noen av soppene ser nesten ut til å ha ansikter på seg, men det kan vel ikke stemme?"
@@ -594,24 +678,26 @@ def rom9(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom 10
-def rom10(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom10", engine.rom10_inngang_tekst, engine.rom10_utforsk_tekst, besøkt)
+def rom10(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom10",
+        engine.rom10_inngang_tekst,
+        engine.rom10_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "vest":
-                rom = "rom5"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            elif obj == "øst":
-                rom = "rom12"
-                break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["aviser", "magasiner"]:
@@ -624,7 +710,7 @@ def rom10(rom, restart, status, besøkt):
                 if not engine.inventar["kart"]:
                     print("Du blåser støvet av den gamle pizzaesken og plukker den opp. På undersiden ser du noe som ligner på et slags kart over kjelleren. Du river det løs og tar det med deg.")
                     engine.inventar["kart"] = True
-                    engine.status["poeng"] += 500
+                    spilltilstand["status"]["poeng"] += 500
                 else:
                     print("En pizzaeske med et hull hvor det tidligere var et kart.")
             elif obj == "manual":
@@ -637,27 +723,29 @@ def rom10(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
     
 # Funksjon for rom 11
-def rom11(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom11", engine.rom11_inngang_tekst, engine.rom11_utforsk_tekst, besøkt)
+def rom11(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom11",
+        engine.rom11_inngang_tekst,
+        engine.rom11_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "nord":
-                rom = "rom8"
+            if obj == "luke" and not spilltilstand["status"]["åpen_luke"]:
+                print(engine.ugyldig)
+                continue
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            if obj == "luke":
-                if not engine.status["åpen_luke"]:
-                    print(engine.ugyldig)
-                else:
-                    rom = "kjeller2_1"
-                    break
-            else:
-                print(engine.ingen_vei)
         
         elif verb == "se":
             if obj == "fotspor":
@@ -680,9 +768,9 @@ def rom11(rom, restart, status, besøkt):
         elif verb == "bruk" and isinstance(obj, tuple):
             item, target = obj
             if item in ["nøkkel", "kode"] and target == "luke":
-                if engine.status["åpen_luke"]:
+                if spilltilstand["status"]["åpen_luke"]:
                     print("Luken er allerede åpnet.")
-                elif not engine.status["luke_kode"]:
+                elif not spilltilstand["status"]["luke_kode"]:
                     print("Du mangler koden til kodelåsen.")
                 elif not engine.inventar["luke_nøkkel1"]:
                     print("Du mangler nøkkelen til den første låsen.")
@@ -690,32 +778,34 @@ def rom11(rom, restart, status, besøkt):
                     print("Du mangler nøkkelen til den andre låsen.")
                 else:
                     print("Med de to nøklene og koden til hengelåsen får du åpnet luken.")
-                    engine.status["åpen_luke"] = True
-                    engine.status["poeng"] += 500
+                    spilltilstand["status"]["åpen_luke"] = True
+                    spilltilstand["status"]["poeng"] += 500
             else:
                 print(engine.ugyldig)
 
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
     
 # Funksjon for rom 12
-def rom12(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom12", engine.rom12_inngang_tekst, engine.rom12_utforsk_tekst, besøkt)
+def rom12(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom12",
+        engine.rom12_inngang_tekst,
+        engine.rom12_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "øst":
-                rom = "rom11"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            if obj == "sør":
-                rom = "rom13"
-                break
-            else:
-                print(engine.ingen_vei)
         
         elif verb == "se":
             if obj in ["hylle", "hyller"]:
@@ -737,22 +827,22 @@ def rom12(rom, restart, status, besøkt):
             if obj == "nøkkel":
                 print("Du rekker hånden ned i stoffrestene og plukker opp nøkkelen. Det henger en liten lapp på den hvor det står 'K2'.")
                 engine.inventar["luke_nøkkel2"] = True
-                engine.status["poeng"] += 200
+                spilltilstand["status"]["poeng"] += 200
             elif obj == "pose":
                 print("Du plukker opp posen og åpner den. Du tar litt av det hvite pulveret på fingen og smaker det. Salt? Jaja, kanskje det blir nyttig.")
                 engine.inventar["saltpose"] = True
-                engine.status["poeng"] += 50
+                spilltilstand["status"]["poeng"] += 50
             elif obj in ["krok", "jernkrok"]:
                 print("Du røsker litt i jernkroken på veggen, som løsner lett, og henger den på beltet ditt.")
                 engine.inventar["jenrkrok"] = True
-                engine.status["poeng"] += 100
+                spilltilstand["status"]["poeng"] += 100
             elif obj in ["krukke", "gugge"]:
                 if not engine.inventar["krukke"]:
                     engine.endre_helse(-1)
                     print("Du tar en sjanse og lener deg ned over krukken. Du smaker litt på guggen, og kjenner umiddelbart at du blir litt ør i hodet.\n" \
                     f"Du mister 1 helsepoeng, og har nå {engine.status['helse']}.")
-                    engine.status["krukke"] = True
-                    engine.status["poeng"] -= 50
+                    spilltilstand["status"]["krukke"] = True
+                    spilltilstand["status"]["poeng"] -= 50
                 else:
                     print("Tror ikke det er en god ide å teste den guggen igjen...")
             else:
@@ -761,21 +851,26 @@ def rom12(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for rom 13
-def rom13(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("rom13", engine.rom13_inngang_tekst, engine.rom13_utforsk_tekst, besøkt)
+def rom13(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "rom13",
+        engine.rom13_inngang_tekst,
+        engine.rom13_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "nord":
-                rom = "rom12"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
         
         elif verb == "se":
             if obj == "skrin":
@@ -785,8 +880,8 @@ def rom13(rom, restart, status, besøkt):
             elif obj in ["vegg", "vegger"]:
                 print("Du undersøker veggene litt, og merker deg at det ikke ser ut som en profesjonell har laget dette rommet. Du merker at de samme fire tallene er risset inn flere steder: \n" \
                 "'3142'.")
-                engine.status["luke_kode"] = True
-                engine.status["poeng"] += 150
+                spilltilstand["status"]["luke_kode"] = True
+                spilltilstand["status"]["poeng"] += 150
             else:
                 print(engine.ugyldig)
             
@@ -801,40 +896,33 @@ def rom13(rom, restart, status, besøkt):
             if item == "brekkjern" and target == "skrin":
                 print("Du klarer å presse brekkjernet inn i en liten sprekk og drar til med all din makt. \n"
                       "Selv etter et minutt med kaving klarer du ikke å få opp skrinet.")
-                engine.status["poeng"] += 50
+                spilltilstand["status"]["poeng"] += 50
             else:
                 print(engine.ugyldig)
         
         else:
             print(engine.ugyldig)
             
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for kjeller2_1
-def kjeller2_1(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("kjeller2_1", engine.kjeller2_1_inngang_tekst, engine.kjeller2_1_utforsk_tekst, besøkt)
+def kjeller2_1(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "kjeller2_1",
+        engine.kjeller2_1_inngang_tekst,
+        engine.kjeller2_1_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "luke":
-                rom = "rom11"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            elif obj == "øst":
-                rom = "kjeller2_2"
-                break
-            elif obj == "sør":
-                rom = "kjeller2_3"
-                break
-            elif obj == "vest":
-                rom = "kjeller2_4"
-                break
-            elif obj == "nord":
-                rom = "kjeller2_5"
-                break
-            else:
-                print(engine.ingen_vei)
         
         elif verb == "se":
             if obj in ["stige", "jernstige"]:
@@ -847,21 +935,26 @@ def kjeller2_1(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for kjeller2_2
-def kjeller2_2(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("kjeller2_2", engine.kjeller2_2_inngang_tekst, engine.kjeller2_2_utforsk_tekst, besøkt)
+def kjeller2_2(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "kjeller2_2",
+        engine.kjeller2_2_inngang_tekst,
+        engine.kjeller2_2_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:  
         verb, obj = engine.parse_kommando()
         
         if verb == "gå":
-            if obj == "vest":
-                rom = "kjeller2_1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["bokhylle", "bokhyller"]:
@@ -875,12 +968,12 @@ def kjeller2_2(rom, restart, status, besøkt):
         
         elif verb == "ta":
             if obj in ["kolbe", "kolber"]:
-                if not engine.status["kolber"]:
+                if not spilltilstand["status"]["kolber"]:
                     engine.endre_helse(-1)
                     print("Du går litt mellom de forskjellige kolbene. De fleste er knust, men du ser en på gulvet som har en slags sølvfarget væske oppi. Du bøyer deg ned og plukker den opp, men kolben knuser idet du tar på den.\n" \
                     f"Du mister 1 helsepoeng, og har nå {engine.status['helse']}.")
-                    engine.status["kolber"] = True
-                    engine.status["poeng"] -= 50
+                    spilltilstand["status"]["kolber"] = True
+                    spilltilstand["status"]["poeng"] -= 50
                 else:
                     print("Det er ikke noen andre kolber som ser interessante ut.")
             if obj == "skrin":
@@ -899,21 +992,26 @@ def kjeller2_2(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 #Funksjon for kjeller2_3
-def kjeller2_3(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("kjeller2_3", engine.kjeller2_3_inngang_tekst, engine.kjeller2_3_utforsk_tekst, besøkt)
+def kjeller2_3(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "kjeller2_3",
+        engine.kjeller2_3_inngang_tekst,
+        engine.kjeller2_3_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:
         verb, obj = engine.parse_kommando()
 
         if verb == "gå":
-            if obj == "nord":
-                rom = "kjeller2_1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["stol", "stoler", "gamingstoler", "gamingstol"]:
@@ -938,31 +1036,36 @@ def kjeller2_3(rom, restart, status, besøkt):
         elif verb == "bruk" and isinstance(obj, tuple):
             item, target = obj
             if item in ["hjul", "stolhjul"] and target == "tv":
-                if not engine.status["tv-kode"]:
+                if not spilltilstand["status"]["tv-kode"]:
                     print("Med all din makt klarer du så vidt å løfte TV-en opp og snike stolhjulet under. \n"
                           "Du klarer å svinge TVen bort fra veggen, og ser fire tall risset inn på baksiden av TVen. 1992.")
-                    engine.status["tv-kode"] = True
+                    spilltilstand["status"]["tv-kode"] = True
                 else:
                     print("Du ser ikke noe poeng i å prøve å flytte på TVen igjen.")
 
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 #Funksjon for kjeller2_4
-def kjeller2_4(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("kjeller2_4", engine.kjeller2_4_inngang_tekst, engine.kjeller2_4_utforsk_tekst, besøkt)
+def kjeller2_4(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "kjeller2_4",
+        engine.kjeller2_4_inngang_tekst,
+        engine.kjeller2_4_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:
         verb, obj = engine.parse_kommando()
 
         if verb == "gå":
-            if obj == "øst":
-                rom = "kjeller2_1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj == "gryte":
@@ -991,13 +1094,13 @@ def kjeller2_4(rom, restart, status, besøkt):
                     svar = input("Du heller saltet oppi gryten med det hvite pulveret og rister den litt rundt for å blande det. \n" \
                     "Når du er fornøyd, stirrer du ned på et pulver som er nøyaktig likt som før. Vil du ta sjansen på å smake? (ja/nei)\n>").lower().strip()
                     if svar == "ja":
-                        utfall = engine.sjansemekanikk("gamercoke", status)
+                        utfall = engine.sjansemekanikk("gamercoke", spilltilstand["status"])
                         if utfall == "seier":
                             engine.endre_helse(+1)
                             print("Du slikker på fingen og stipper den ned i pulveret og stikker den kjapt i munnen etterpå.\n" \
                             "Du kjenner umiddelbart at hjertet ditt slår fortere og du føler deg litt kvikkere.\n" \
                             f"Du får 1 helsepoeng, og har nå {engine.status['helse']}.")
-                            status["poeng"] += 50
+                            spilltilstand["status"]["poeng"] += 50
                         else:
                             engine.endre_helse(-1)
                             print("Du slikker på fingen og stipper den ned i pulveret og stikker den kjapt i munnen etterpå.\n" \
@@ -1012,21 +1115,26 @@ def kjeller2_4(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand
 
 # Funksjon for kjeller2_5
-def kjeller2_5(rom, restart, status, besøkt):
-    besøkt = engine.rombeskrivelse("kjeller2_5", engine.kjeller2_5_inngang_tekst, engine.kjeller2_5_utforsk_tekst, besøkt)
+def kjeller2_5(spilltilstand):
+    spilltilstand["besøkt"] = engine.rombeskrivelse(
+        "kjeller2_5",
+        engine.kjeller2_5_inngang_tekst,
+        engine.kjeller2_5_utforsk_tekst,
+        spilltilstand["besøkt"]
+    )
 
     while True:
         verb, obj = engine.parse_kommando()
 
         if verb == "gå":
-            if obj == "sør":
-                rom = "kjeller2_1"
+            utganger = ROM_FORBINDELSER.get(spilltilstand["rom"], {})
+            destinasjon = håndter_retning(obj, utganger, spilltilstand["rom"])
+            if destinasjon != spilltilstand["rom"]:
+                spilltilstand["rom"] = destinasjon
                 break
-            else:
-                print(engine.ingen_vei)
 
         elif verb == "se":
             if obj in ["krok", "kroker"]:
@@ -1047,19 +1155,19 @@ def kjeller2_5(rom, restart, status, besøkt):
         elif verb == "bruk" and isinstance(obj, tuple):
             item, target = obj
             if item == "brekkjern" and target in ["planke", "planker"]:
-                if not status["planker"]:
+                if not spilltilstand["status"]["planker"]:
                     if engine.inventar["brekkjern"]:
-                        utfall = engine.sjansemekanikk("planker", status)
+                        utfall = engine.sjansemekanikk("planker", spilltilstand["status"])
                         if utfall == "seier":
                             print("Du river av planke etter planke med brekkjernet ditt til du finner... en sparegris?\n" \
                             "Du knuser den i bakken, og ut faller en haug med svenske mynter og sedler.")
-                            status["poeng"] += 100
-                            status["planker"] = True
+                            spilltilstand["status"]["poeng"] += 100
+                            spilltilstand["status"]["planker"] = True
                         else:
                             engine.endre_helse(-1)
                             print("Du hamrer brekkjernet inn i en glipe og drar til. Etter en stund, gir det plutselig etter, og du får en planke rett i fleisen.\n" \
                             f"Du mister 1 helsepoeng. Nå har du {engine.status['helse']}.")
-                            status["planker"] = True
+                            spilltilstand["status"]["planker"] = True
                     else:
                         print(f"Du har ikke {item} i inventaret.")
                 else:
@@ -1069,4 +1177,4 @@ def kjeller2_5(rom, restart, status, besøkt):
         else:
             print(engine.ugyldig)
 
-    return rom, restart, status, besøkt
+    return spilltilstand

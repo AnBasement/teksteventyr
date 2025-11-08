@@ -315,34 +315,98 @@ gyldige_valg_i_rom = {
 # Funksjoner
 # =========================
 
-# Lagre spillstatus
-def lagre_spill(besøkt, status, rom):
-    data = {
-        "besøkt": besøkt,
-        "status": status,
-        "inventar": inventar,
-        "rom": rom
+# Hent nåværende spilltilstand
+def hent_spilltilstand():
+    """
+    Returnerer en ordbok som representerer den nåværende spilltilstanden.
+
+    Args:
+        Ingen
+
+    Returns:
+        dict: En ordbok som inneholder den nåværende spilltilstanden.
+    """
+    return {
+        "rom": rom,
+        "restart": restart,
+        "besøkt": besøkt.copy(),
+        "status": status.copy(),
+        "inventar": inventar.copy()
     }
-    with open(lagret_spill, "w", encoding="utf-8") as fil:
-        json.dump(data, fil, ensure_ascii=False, indent=4)
-    print("Spillet ditt er lagret!")
+
+def sett_spilltilstand(tilstand):
+    """
+    Setter spilltilstanden basert på den gitte ordboken.
+    """
+    global rom, restart, besøkt, status, inventar, pos
+    rom = tilstand.get("rom", "rom1")
+    restart = tilstand.get("restart", False)
+    besøkt = tilstand.get("besøkt", {}).copy()
+    status = tilstand.get("status", {}).copy()
+    inventar = tilstand.get("inventar", []).copy()
+
+
+# Valider spilltilstand
+def valider_spilltilstand(tilstand):
+    """
+    Validerer at den gitte spilltilstanden har riktig format og nødvendige nøkler.
+
+    Args:
+        tilstand (dict): Spilltilstanden som skal valideres.
+
+    Returns:
+        bool: True hvis spilltilstanden er gyldig, False ellers.
+    """
+    nødvendige_nøkler = {"rom", "restart", "besøkt", "status", "inventar"}
+    if not all(key in tilstand for key in nødvendige_nøkler):
+        return False
+    
+    # Check if current room exists
+    if tilstand["rom"] not in ["rom1", "rom2", "rom3", "rom4", "rom5", 
+                            "rom6", "rom7", "rom8", "rom9", "rom10",
+                            "rom11", "rom12", "rom13", "gang1", "kjeller2_1",
+                            "kjeller2_2", "kjeller2_3", "kjeller2_4", "kjeller2_5"]:
+        return False
+    
+    return True
+
+# Lagre spillstatus
+def lagre_spill():
+    """
+    Lagrer spilltilstanden til fil
+    """
+    try:
+        data = hent_spilltilstand()
+        with open(lagret_spill, "w", encoding="utf-8") as fil:
+            json.dump(data, fil, ensure_ascii=False, indent=4)
+        print("Spillet ditt er lagret!")
+    except Exception as e:
+        print(f"Kunne ikke lagre spillet: {e}")
 
 # Laste inn spillstatus
 def last_inn_spill():
-    global besøkt, status, rom
+    """Laster inn spilltilstanden fra fil og returnerer en spilltilstand-dict.
+
+    Returns:
+        dict: Spilltilstand (samme format som hent_spilltilstand()).
+    """
     if not os.path.exists(lagret_spill):
         print("Finner ikke et lagret spill, starter et nytt!")
-        return besøkt, status, rom
+        return hent_spilltilstand()
 
-    with open(lagret_spill, "r", encoding="utf-8") as fil:
-        data = json.load(fil)
-        besøkt = data.get("besøkt", besøkt)
-        status = data.get("status", status)
-        rom = data.get("rom", rom)
-        inventar.update(data.get("inventar", inventar))  # Oppdaterer eksisterende inventar
-
-    print("Velkommen tilbake!")
-    return besøkt, status, rom
+    try:
+        with open(lagret_spill, "r", encoding="utf-8") as fil:
+            data = json.load(fil)
+            if valider_spilltilstand(data):
+                sett_spilltilstand(data)
+                print("Velkommen tilbake!")
+                return hent_spilltilstand()
+            else:
+                print("Lagret spill ser ut til å være korrupt eller utdatert. Starter et nytt spill.")
+                return hent_spilltilstand()
+    except Exception as e:
+        print(f"Kunne ikke laste inn spillet: {e}")
+        return hent_spilltilstand()
 
 # Funksjon for å sjekke gyldige valg
 def sjekk_gyldig_valg(prompt, gyldige_valg, ugyldig):
@@ -423,7 +487,7 @@ def hjelp_og_utforsk(valg, hjelp_tekst, utforsk_tekst, status):
     elif valg == "tallkode":
         tallkode_funnet(status)
     elif valg == "lagre":
-        lagre_spill(besøkt, status, rom)
+        lagre_spill()
     elif valg == "kart":
         if not inventar["kart"]:
             print(ugyldig)

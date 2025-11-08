@@ -9,6 +9,18 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Uutgitt]
 
+### Lagt til
+
+- Implementerer funksjoner for spilltilstand. Disse brukes i lagre/hente-funksjoner og valideres gjennom egen funksjon som sjekker at alle påkrevde nøkler er tilstede.
+
+### Endret
+
+- Istedenfor en lang if/elif-løkke kjøres spillet nå gjennom en funksjon som håndterer hvilket rom spilleren befinner seg i.
+- Pakket hovedspilløkken i en funksjon som også håndterer feilmeldinger.
+- Implementerer `håndter_retning()` som tar seg av bevegelser mellom rom. Sjekker gyldige forbindelser opp mot eksisterende dict `gyldige_valg_i_rom` og returnerer destinasjonen til rom-funksjonen som sender spilleren til korrekt rom.
+
+---
+
 ## [1.5.1] - 2025-11-08
 
 ### Lagt til
