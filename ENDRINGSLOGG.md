@@ -12,12 +12,14 @@ Formatert etter [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Lagt til
 
 - Implementerer funksjoner for spilltilstand. Disse brukes i lagre/hente-funksjoner og valideres gjennom egen funksjon som sjekker at alle påkrevde nøkler er tilstede.
+- Legger til `ETASJE_OFFSETS` som gjør det enklere å legge til nye rom uavhengig av plassering.
 
 ### Endret
 
 - Istedenfor en lang if/elif-løkke kjøres spillet nå gjennom en funksjon som håndterer hvilket rom spilleren befinner seg i.
 - Pakket hovedspilløkken i en funksjon som også håndterer feilmeldinger.
 - Implementerer `håndter_retning()` som tar seg av bevegelser mellom rom. Sjekker gyldige forbindelser opp mot eksisterende dict `gyldige_valg_i_rom` og returnerer destinasjonen til rom-funksjonen som sender spilleren til korrekt rom.
+- Rydder opp i kartet for å tegne det bedre i forbindelse med gangen og rom som strekker seg over lengre avstander.
 
 ---
 
