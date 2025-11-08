@@ -28,9 +28,28 @@ kjeller2_posisjoner = {
     "kjeller2_5": {"pos": (0, 4), "trapper": False}
 }
 
-# Kart for første etasje (rom1–rom11 + gang1)
+# Basis-offset for hvert kart. Øk kolonneverdien for å flytte hele kartet mot
+# høyre for å få plass til nye rom på venstresiden, eller radverdien for
+# å flytte kartet nedover uten å endre hver enkelt oppføring.
+ETASJE_OFFSETS = {
+    "etasje1": (0, 0),
+    "kjeller2": (0, 0),
+}
 
-kart_etasje1 = " "
+
+def hent_posisjon(romdata, offset):
+    """
+    Returnerer absolutt (rad, kolonne) for et rom. Hvis rommet definerer
+    'pos_rel', kombineres den med offseten slik at vi kan flytte hele kartet
+    uten å oppdatere hver koordinat.
+    """
+    if "pos" in romdata:
+        return romdata["pos"]
+
+    rel_rad, rel_kol = romdata.get("pos_rel", (0, 0))
+    off_rad, off_kol = offset
+    return rel_rad + off_rad, rel_kol + off_kol
+
 
 def vis_kart():
     # Nåværende rom og besøkt-dict hentes fra engine.py
@@ -41,6 +60,7 @@ def vis_kart():
     if nåværende_rom in romposisjoner:
         rompos = romposisjoner
         rader, kolonner = 11, 28
+        offset = ETASJE_OFFSETS["etasje1"]
         koblinger = [
             ("rom1", "rom2"), ("rom2", "rom3"), ("rom3", "rom4"),
             ("rom3", "gang1"), ("gang1", "rom5"), ("gang1", "rom6"),
@@ -51,6 +71,7 @@ def vis_kart():
     elif nåværende_rom in kjeller2_posisjoner:
         rompos = kjeller2_posisjoner
         rader, kolonner = 5, 20
+        offset = ETASJE_OFFSETS["kjeller2"]
         koblinger = [
             ("kjeller2_1", "kjeller2_2"), ("kjeller2_1", "kjeller2_3"), ("kjeller2_1", "kjeller2_4"),
             ("kjeller2_1", "kjeller2_5")
@@ -67,7 +88,7 @@ def vis_kart():
 
     # Tegn rom
     for rom in synlige_rom:
-        row, col = rompos[rom]["pos"]
+        row, col = hent_posisjon(rompos[rom], offset)
         trapper = rompos[rom].get("trapper", False)
         if rom == nåværende_rom:
             symbol = "[x]"
@@ -80,8 +101,8 @@ def vis_kart():
     # Tegn koblinger
     for a, b in koblinger:
         if a in synlige_rom and b in synlige_rom:
-            row_a, col_a = rompos[a]["pos"]
-            row_b, col_b = rompos[b]["pos"]
+            row_a, col_a = hent_posisjon(rompos[a], offset)
+            row_b, col_b = hent_posisjon(rompos[b], offset)
 
             if row_a == row_b:
                 for c in range(min(col_a, col_b)+3, max(col_a, col_b)):
@@ -89,6 +110,21 @@ def vis_kart():
             elif col_a == col_b:
                 for r in range(min(row_a, row_b)+1, max(row_a, row_b)):
                     kart_karakterer[r][col_a+1] = "|"
+            else:
+                mid_col = col_b + 1
+
+                if mid_col > col_a:
+                    start = col_a + 3
+                    for c in range(start, mid_col + 1):
+                        kart_karakterer[row_a][c] = "-"
+                else:
+                    start = col_a - 1
+                    for c in range(start, mid_col - 1, -1):
+                        kart_karakterer[row_a][c] = "-"
+
+                step = 1 if row_b > row_a else -1
+                for r in range(row_a + step, row_b, step):
+                    kart_karakterer[r][mid_col] = "|"
 
     # Print kartet
     for line in kart_karakterer:

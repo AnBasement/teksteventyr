@@ -301,7 +301,7 @@ gyldige_valg_i_rom = {
     "rom8": ["nord", "øst", "ovn", "oljeovn", "vifte", "rør", "ventil", "oljekanner", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom9": ["sør", "sopp", "glødende sopp", "bøtte", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom10": ["vest", "aviser", "magasiner", "pult", "pizzaeske", "manual", "avisutklipp", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
-    "rom11": ["nord", "fotspor", "luke", "skilt", "messingskilt", "nøkkel", "kode", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
+    "rom11": ["nord", "sør", "fotspor", "luke", "skilt", "messingskilt", "nøkkel", "kode", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom12": ["øst", "sør", "hylle", "hyller", "kasse", "kasser", "filler", "stoffrester", "pose", "jernkrok", "krok", "krukke", "nøkkel", "gugge", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "rom13": ["nord", "skrin", "sokkel", "vegg", "vegger", "brekkjern", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
     "kjeller2_1": ["luke", "øst", "sør", "nord", "vest", "stige", "jernstige", "vegg", "vegger", "utforsk", "hjelp", "tallkode", "lagre", "kart", "helse"],
